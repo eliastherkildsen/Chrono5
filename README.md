@@ -23,7 +23,7 @@ muligt for de øvrige konsulenter at finde den nødvendige assistance.
 Dvs. at finde den rette konsulent med de rette kompetencer til en given
 opgave.
 
-2.Det skal være muligt at lave oversigt over, hvilke opgaver den enkelte
+2. Det skal være muligt at lave oversigt over, hvilke opgaver den enkelte
 konsulent er beskæftiget med i øjeblikket og hvornår vedkommende har
 ledige ressourcer.
 
