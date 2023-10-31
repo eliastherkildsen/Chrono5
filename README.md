@@ -55,6 +55,7 @@ informationer.
 
 ## requirements 
 SDK corretto-18 JAVA VERSION 18.0.2
+mssql-jdbc-12.4.1.jre11-sources.jar
 
 
 ### TODO
