@@ -1,3 +1,4 @@
 ### IntelliJ IDEA ###
 /out
 .DS_Store
+/.idea/libraries

@@ -1,4 +1,3 @@
-import javax.sound.midi.SoundbankResource;
 import java.sql.*;
 import java.util.Properties;
 
@@ -12,6 +11,7 @@ public class Main{
     public static final String ENCRYPT = "false";
     public static final String URL = "jdbc:sqlserver://localhost:"+ PORT +";databaseName="+DATABASE_NAME;
 
+    public static Connection connection = null;
 
 
     public static void main(String[] args) {
@@ -23,11 +23,11 @@ public class Main{
         System.out.printf("%sSetting up props.%s%n", ANSI_YELLOW, ANSI_RESET);
 
         // creating JDBC connection
-        Connection connection = databaseConnection(properties, URL);
+        connection = databaseConnection(properties, URL);
         System.out.printf("%sCreating connection.%s%n", ANSI_YELLOW, ANSI_RESET);
 
         // test
-        test(connection);
+        test();
 
         // closing JDBC connection
         databaseClose(connection);
@@ -91,7 +91,7 @@ public class Main{
 
     }
 
-    public static void test(Connection connection){
+    public static void test(){
 
         PreparedStatement preparedStatement = null;
         try {
