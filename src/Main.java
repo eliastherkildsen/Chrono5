@@ -1,3 +1,4 @@
+import javax.sound.midi.SoundbankResource;
 import java.sql.*;
 import java.util.Properties;
 import java.util.Scanner;
@@ -180,34 +181,13 @@ public class Main{
             }
 
         }while (true);
-    }
 
-    public static void searchProject() {
-        System.out.print("Project ID: ");
-        int projectID = getUserInputInt();
-        PreparedStatement countProjects = null;
-        int project;
 
-        try {
-            countProjects = connection.prepareCall("SELECT fldProjectID FROM tblTest");
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-
-        try {
-            ResultSet count = countProjects.executeQuery();
-            while (count.next()) {
-                project = count.getInt("fldProjectID");
-            }
-            count.close();
-        } catch (SQLException e) {
-
-        }
-        if (projectID == project) {
-            System.out.println("Error");
-        }
 
     }
+
+
+
 
     // ANSI escape code colors.
     // from -> https://stackoverflow.com/questions/5762491/how-to-print-color-in-console-using-system-out-println
