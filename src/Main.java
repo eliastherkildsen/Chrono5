@@ -2,6 +2,7 @@ import javax.sound.midi.SoundbankResource;
 import java.sql.*;
 import java.util.Properties;
 import java.util.Scanner;
+import java.util.concurrent.locks.Condition;
 
 
 public class Main{
@@ -9,7 +10,7 @@ public class Main{
     public static final String USERNAME = "sa";
     public static final String PASSWORD = "1234";
     public static final String DATABASE_NAME = "dbTest";
-    public static final String PORT = "1433";
+    public static final String PORT = "1434";
     public static final String ENCRYPT = "false";
     public static final String URL = "jdbc:sqlserver://localhost:"+ PORT +";databaseName="+DATABASE_NAME;
 
@@ -28,11 +29,7 @@ public class Main{
         connection = databaseConnection(properties, URL);
         System.out.printf("%sCreating connection.%s%n", ANSI_YELLOW, ANSI_RESET);
 
-        int input = getUserInputInt();
-        System.out.println(input);
-
-
-        editProject(connection);
+        //editProject(connection, "tblUser", "fldName", "Test", "fldID = '8'");
 
         // closing JDBC connection
         databaseClose(connection);
@@ -183,27 +180,27 @@ public class Main{
             }
 
         }while (true);
-
-
-
     }
 
 
-
-
-    public static void editProject(Connection connection) {
-        //PreparedStatement preparedStatement = null;
-
-        System.out.printf("%s%S", ANSI_RESET, "Update: ");
-
-
+    /**
+     * Sending a SQL UPDATE to the DB to change fields. Includes basic SQL error handling.
+     * @param connection To function with our DB
+     * @param tableName Name of the table you want to edit.
+     * @param column Name of the column you want to change.
+     * @param value The value you want to change.
+     * @param Condition The condition of the change.
+     */
+    public static void editProject(Connection connection, String tableName, String column, String value, String Condition) {
         try {
-            PreparedStatement preparedStatement = connection.prepareCall("INSERT INTO tblUser (fldID, fldName) VALUES (8, 'Bobby')");
+            //Prepare SQL
+            PreparedStatement preparedStatement = connection.prepareCall("UPDATE " + tableName + " SET " + column + " = '" + value + "' WHERE " + Condition);
 
-            // Assuming you already have a PreparedStatement object named preparedStatement
+            //Execute it.
             int row = preparedStatement.executeUpdate();
-            System.out.println(row);
+            System.out.printf("%s%S%d%n",ANSI_YELLOW,"rows affected: ",row);
 
+            //Catch Error with some what usable text if relevant.
         } catch (SQLException e) {
             System.out.println("Error: ");
             e.printStackTrace();
