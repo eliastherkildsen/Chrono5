@@ -37,12 +37,12 @@ public class Main{
     }
 
     /***
-     * Properties method used to create a propertie containing all props used to
+     * Properties method used to create a properties containing all props used to
      * connect to JDBC
      * @return properties
      */
     public static Properties setProps(){
-        // creating a intestines of properties.
+        // creating an intestines of properties.
         Properties properties = new Properties();
         properties.setProperty("user", USERNAME);
         properties.setProperty("password", PASSWORD);
@@ -81,7 +81,7 @@ public class Main{
         // initializes connection.
         Connection connection = null;
 
-        // JDBC tryes to connect to SQL database add URL.
+        // JDBC tries to connect to SQL database add URL.
         try {
             connection = DriverManager.getConnection(URL, properties);
         } catch (SQLException e) {
@@ -125,8 +125,8 @@ public class Main{
     }
 
     /***
-     * method for getting a userinput as a string. and closing scanner again.
-     * @return userinput.
+     * method for getting a user input as a string. and closing scanner again.
+     * @return user input.
      */
     public static String getUserInputStr(){
         // init scanner and string to hold input.
@@ -152,7 +152,7 @@ public class Main{
         int input;
 
         do {
-            // checks if user has entered a integer.
+            // checks if user has entered an integer.
             if (scanner.hasNextInt()){
                 input = scanner.nextInt();
                 // checks if entered integer is negative.
@@ -177,8 +177,8 @@ public class Main{
 
     /**
      * prompts the user for a data, month, year
-     * validates the inputs, and returns them in a string formated DD.MM.YY
-     * @return formateddate
+     * validates the inputs, and returns them in a string formatted DD.MM.YY
+     * @return formatted
      */
     public static String dateFormattingWithValidation() {
 
@@ -190,13 +190,13 @@ public class Main{
             System.out.print("Enter day (DD): ");
             day = getUserInputInt();
 
-            // checks if the month is in the vaild range (1 - 12).
+            // checks if the month is in the valid range (1 - 12).
             if (day >= 1 && day <= 31){
                 break;
             }
 
             // sends error message to user.
-            System.out.printf("%sYou have entered a value witch is not a vaild. " +
+            System.out.printf("%sYou have entered a value witch is not a valid. " +
                     "day! please enter a day 1 between 31 2023%s%n", ANSI_RED,ANSI_RESET);
 
 
@@ -206,13 +206,13 @@ public class Main{
             System.out.print("Enter month (MM): ");
             month = getUserInputInt();
 
-            // checks if the month is in the vaild range (1 - 12).
+            // checks if the month is in the valid range (1 - 12).
             if (month >= 1 && month <= 12){
                 break;
             }
 
             // sends error message to user.
-            System.out.printf("%sYou have entered a value witch is not a vaild. " +
+            System.out.printf("%sYou have entered a value witch is not a valid. " +
                     "month! please enter a month 1 between 12 2023%s%n", ANSI_RED,ANSI_RESET);
 
 
@@ -221,13 +221,13 @@ public class Main{
         do {
             System.out.print("Enter year (YYYY): ");
             year = getUserInputInt();
-            // checks if the year is in the vaild range.
+            // checks if the year is in the valid range.
             if (year >= 2022 && year <= 2030){
                 break;
             }
 
             // sends error message to user.
-            System.out.printf("%sYou have entered a value  witch is not a vaild. " +
+            System.out.printf("%sYou have entered a value  witch is not a valid. " +
                     "day! please enter a year between 2022 and 2030%s%n", ANSI_RED,ANSI_RESET);
 
         } while (true);
@@ -239,6 +239,7 @@ public class Main{
 
     public static void createProject(){
 
+        // initializing
         String projectStartDate;
         String projectEndDate;
         String projectName;
@@ -248,7 +249,7 @@ public class Main{
         System.out.printf("Pleas give your project a name %n");
         projectName = getUserInputStr();
 
-        // prompt user to create a project start dat and saves the input.
+        // prompt user to create a project start date and saves the input.
         System.out.printf("Please enter information relating to the project start date%n");
         projectStartDate = dateFormattingWithValidation();
 
