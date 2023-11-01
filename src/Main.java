@@ -27,7 +27,7 @@ public class Main{
         connection = databaseConnection(properties, URL);
         System.out.printf("%sCreating connection.%s%n", ANSI_YELLOW, ANSI_RESET);
 
-        System.out.println(DateFormattingWithValidation());
+        //System.out.println(DateFormattingWithValidation());
 
 
         // closing JDBC connection
@@ -180,7 +180,7 @@ public class Main{
      * validates the inputs, and returns them in a string formated DD.MM.YY
      * @return formateddate
      */
-    public static String DateFormattingWithValidation() {
+    public static String dateFormattingWithValidation() {
 
         int day;
         int month;
@@ -233,6 +233,29 @@ public class Main{
         } while (true);
 
         return String.format("%s.%s.%s",day, month, year);
+
+
+    }
+
+    public static void CreateProject(){
+
+        String projectStartDate;
+        String projectEndDate;
+        String projectName;
+
+
+        // prompts the user to enter a project name.
+        System.out.printf("Pleas give your project a name %n");
+        projectName = getUserInputStr();
+
+        // prompt user to create a project start data.
+        System.out.printf("Please enter information relating to the project start date%n");
+        projectStartDate = dateFormattingWithValidation();
+
+        // prompt user to create a project start data.
+        System.out.printf("Please enter information relating to the project end date%n");
+        projectEndDate = dateFormattingWithValidation();
+
 
 
     }
