@@ -3,29 +3,56 @@ import java.util.Properties;
 
 public class Main{
 
+    // JDBC PROPS
+    public static final String USERNAME = "sa";
+    public static final String PASSWORD = "1234";
+    public static final String DATABASE_NAME = "dbTest";
+    public static final String PORT = "1433";
+    public static final String ENCRYPT = "false";
+    public static final String URL = "jdbc:sqlserver://localhost:"+ PORT +";databaseName="+DATABASE_NAME;
+
+
+
     public static void main(String[] args) {
 
-        databaseConnection();
+        // getting props
+        Properties properties = setProps();
+
+        // creating JDBC connection
+        Connection connection = databaseConnection(properties, URL);
+
+        // test
+        test(connection);
+
+        // closing JDBC connection
+        databaseClose(connection);
+
 
     }
 
-    public static void databaseConnection(){
-
-        // initializing JDBC information's
-        final String USERNAME = "sa";
-        final String PASSWORD = "1234";
-        final String DATABASE_NAME = "dbTest";
-        final String PORT = "1433";
-        final String ENCRYPT = "false";
-        final String URL = "jdbc:sqlserver://localhost:"+ PORT +";databaseName="+DATABASE_NAME;
-
-
-        // creating the property's for JDBC connection.
+    public static Properties setProps(){
+        // creating a intestines of properties.
         Properties properties = new Properties();
         properties.setProperty("user", USERNAME);
         properties.setProperty("password", PASSWORD);
         properties.setProperty("encrypt", ENCRYPT);
 
+        databaseConnection(properties, URL);
+        return properties;
+    }
+
+    public static void databaseClose(Connection connection){
+        try {
+            connection.close();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        System.out.println("Closed connection!");
+
+    }
+
+    public static Connection databaseConnection(Properties properties, String URL){
 
         // initializes connection.
         Connection connection = null;
@@ -38,20 +65,18 @@ public class Main{
 
 
         System.out.println("Hello JDBC");
+        return connection;
 
-        /* ---------------------------------------------------------------------------------------------
-            eksampel på sql quarry!
-        */
+    }
+
+    public static void test(Connection connection){
+
         PreparedStatement preparedStatement = null;
         try {
             preparedStatement = connection.prepareCall("SELECT * FROM tblUser");
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-
-        // setting up result set
-        //ResultSet resultSet = preparedStatement.executeQuery(); // Read type.
-        //preparedStatement.executeUpdate();
 
 
         try {
@@ -71,8 +96,10 @@ public class Main{
             resultSet.close();
         } catch (SQLException e) {
 
-
         }
+
+
+
 
         /* ---------------------------------------------------------------------------------------------
             End of example.
@@ -85,10 +112,7 @@ public class Main{
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-
     }
-
-
 
     // ANSI escape code colors.
     // from -> https://stackoverflow.com/questions/5762491/how-to-print-color-in-console-using-system-out-println
