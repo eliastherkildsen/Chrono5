@@ -106,7 +106,7 @@ public class Main{
         */
 
         // closing connection to JDBC
-        System.out.println("Closing connection to JDBC..");
+        System.out.printf("%sClosing connection to JDBC..%s", ANSI_YELLOW, ANSI_RESET);
         try {
             connection.close();
         } catch (SQLException e) {
