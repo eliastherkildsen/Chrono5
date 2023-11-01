@@ -1,4 +1,3 @@
-import javax.sound.midi.SoundbankResource;
 import java.sql.*;
 import java.util.Properties;
 import java.util.Scanner;
@@ -28,8 +27,7 @@ public class Main{
         connection = databaseConnection(properties, URL);
         System.out.printf("%sCreating connection.%s%n", ANSI_YELLOW, ANSI_RESET);
 
-        int input = getUserInputInt();
-        System.out.println(input);
+
 
 
         // closing JDBC connection
@@ -138,9 +136,6 @@ public class Main{
         // reads input.
         input = scanner.nextLine();
 
-        // closes scanner.
-        scanner.close();
-
         // returns input.
         return input;
     }
@@ -160,33 +155,25 @@ public class Main{
             // checks if user has entered a integer.
             if (scanner.hasNextInt()){
                 input = scanner.nextInt();
-                // checks if entered integer is positive.
-                if (input >= 0){
-                    // closing scanner.
-                    scanner.close();
-                    return input;
+                // checks if entered integer is negative.
+                if (!(input >= 0)){
+                    System.out.printf("%sYou have entered a negative number witch is not allowed%s%n", ANSI_RED, ANSI_RESET);
                 }
 
-                // if entered number is negative.
-                else {
-                    System.out.printf("%sYou have entered a negative number witch is not allowed%s%n", ANSI_RED, ANSI_RESET);
-                    scanner.next();
-                }
+                break;
+
 
             }
             // if a none numeric value is entered.
             else {
                 System.out.printf("%sYou are only allowed to enter numbers, please try again.%s%n", ANSI_RED, ANSI_RESET);
-                scanner.next();
+                String x =scanner.nextLine();
             }
 
         }while (true);
-
-
+        return input;
 
     }
-
-
 
 
     // ANSI escape code colors.
