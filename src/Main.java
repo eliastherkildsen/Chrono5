@@ -2,6 +2,7 @@ import java.sql.*;
 import java.util.Properties;
 import java.util.Scanner;
 
+
 public class Main{
     // JDBC PROPS
     public static final String USERNAME = "sa";
@@ -17,8 +18,6 @@ public class Main{
 
     public static void main(String[] args) {
 
-        editProject();
-
         System.out.printf("%sProgram starting.%s%n", ANSI_YELLOW, ANSI_RESET);
 
         // getting props
@@ -31,6 +30,8 @@ public class Main{
 
         // test
         test();
+
+        editProject(connection);
 
         // closing JDBC connection
         databaseClose(connection);
@@ -145,16 +146,23 @@ public class Main{
         return input;
     }
 
-    public static void editProject(){
-        
-        System.out.printf("%s%S",ANSI_RESET,"Update:");
-        getUserInput();
-        try{
-            CallableStatement preparedStatement = connection.prepareCall("");
-        } catch (SQLException e){
-            
-        }
+    public static void editProject(Connection connection) {
+        //PreparedStatement preparedStatement = null;
 
+        System.out.printf("%s%S", ANSI_RESET, "Update: ");
+
+
+        try {
+            PreparedStatement preparedStatement = connection.prepareCall("INSERT INTO tblUser (fldID, fldName) VALUES (8, 'Bobby')");
+
+            // Assuming you already have a PreparedStatement object named preparedStatement
+            int row = preparedStatement.executeUpdate();
+            System.out.println(row);
+
+        } catch (SQLException e) {
+            System.out.println("Error: ");
+            e.printStackTrace();
+        }
     }
 
     // ANSI escape code colors.
