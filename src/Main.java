@@ -1,3 +1,4 @@
+import javax.sound.midi.SoundbankResource;
 import java.sql.*;
 import java.util.Properties;
 import java.util.Scanner;
@@ -27,8 +28,9 @@ public class Main{
         connection = databaseConnection(properties, URL);
         System.out.printf("%sCreating connection.%s%n", ANSI_YELLOW, ANSI_RESET);
 
-        // test
-        test();
+        int input = getUserInputInt();
+        System.out.println(input);
+
 
         // closing JDBC connection
         databaseClose(connection);
@@ -125,10 +127,10 @@ public class Main{
     }
 
     /***
-     * method for getting a userinput. and closing scanner again.
+     * method for getting a userinput as a string. and closing scanner again.
      * @return userinput.
      */
-    public static String getUserInput(){
+    public static String getUserInputStr(){
         // init scanner and string to hold input.
         Scanner scanner = new Scanner(System.in);
         String input = "";
@@ -143,11 +145,56 @@ public class Main{
         return input;
     }
 
+    /***
+     * method for getting a user input. checking if the input is a numeric value
+     * checking if the value is positive.
+     * and closing scanner again.
+     * @return
+     */
+    public static int getUserInputInt(){
+
+        Scanner scanner = new Scanner(System.in);
+        int input;
+
+        do {
+            // checks if user has entered a integer.
+            if (scanner.hasNextInt()){
+                input = scanner.nextInt();
+                // checks if entered integer is positive.
+                if (input >= 0){
+                    // closing scanner.
+                    scanner.close();
+                    return input;
+                }
+
+                // if entered number is negative.
+                else {
+                    System.out.printf("%sYou have entered a negative number witch is not allowed%s%n", ANSI_RED, ANSI_RESET);
+                    scanner.next();
+                }
+
+            }
+            // if a none numeric value is entered.
+            else {
+                System.out.printf("%sYou are only allowed to enter numbers, please try again.%s%n", ANSI_RED, ANSI_RESET);
+                scanner.next();
+            }
+
+        }while (true);
+
+
+
+    }
+
+
+
+
     // ANSI escape code colors.
     // from -> https://stackoverflow.com/questions/5762491/how-to-print-color-in-console-using-system-out-println
-    private static final String ANSI_RESET = "\u001B[0m";
-    private static final String ANSI_RED = "\u001B[31m";
-    private static final String ANSI_GREEN = "\u001B[32m";
+    public static final String ANSI_RESET = "\u001B[0m";
+    public static final String ANSI_RED = "\u001B[31m";
+
+    public static final String ANSI_GREEN = "\u001B[32m";
     public static final String ANSI_YELLOW = "\u001B[33m";
 
 }
