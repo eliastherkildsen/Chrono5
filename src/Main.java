@@ -1,5 +1,6 @@
 import java.sql.*;
 import java.util.Properties;
+import java.util.Scanner;
 
 public class Main{
 
@@ -121,6 +122,25 @@ public class Main{
         }
 
 
+    }
+
+    /***
+     * method for getting a userinput. and closing scanner again.
+     * @return userinput.
+     */
+    public static String getUserInput(){
+        // init scanner and string to hold input.
+        Scanner scanner = new Scanner(System.in);
+        String input = "";
+
+        // reads input.
+        input = scanner.nextLine();
+
+        // closes scanner.
+        scanner.close();
+
+        // returns input.
+        return input;
     }
 
     // ANSI escape code colors.
