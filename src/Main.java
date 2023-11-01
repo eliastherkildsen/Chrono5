@@ -94,38 +94,6 @@ public class Main{
 
     }
 
-    public static void test(){
-
-        PreparedStatement preparedStatement = null;
-        try {
-            preparedStatement = connection.prepareCall("SELECT * FROM tblUser");
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-
-
-        try {
-            // Assuming you already have a PreparedStatement object named preparedStatement
-            ResultSet resultSet = preparedStatement.executeQuery();
-
-            while (resultSet.next()) {
-                // Assuming "tblUser" has columns like "column1", "column2", etc.
-                int column1Value = resultSet.getInt("fldID");
-                String column2Value = resultSet.getString("fldName");
-                // Retrieve other columns as needed
-
-                System.out.println("column1: " + column1Value + ", column2: " + column2Value);
-                // Print other columns as needed
-            }
-
-            resultSet.close();
-        } catch (SQLException e) {
-
-        }
-
-
-    }
-
     /***
      * method for getting a userinput as a string. and closing scanner again.
      * @return userinput.
