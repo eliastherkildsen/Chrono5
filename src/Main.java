@@ -1,4 +1,3 @@
-import javax.sound.midi.SoundbankResource;
 import java.sql.*;
 import java.util.Properties;
 import java.util.Scanner;
@@ -181,13 +180,88 @@ public class Main{
             }
 
         }while (true);
-
-
-
     }
 
+    /**
+     * method prompts for an input, then checks if input is yes or no.
+     * @return true if input is yes, false if input is no.
+     */
+    public static boolean askYesNo(String prompt) {
+        Scanner in = new Scanner(System.in);
+        System.out.println(prompt);
+        do {
+            System.out.print("Input: ");
+            String input = in.nextLine().toLowerCase();
+            if (input.equals("yes")) {
+                return true;
+            } else if (input.equals("no")) {
+                return false;
+            } else {
+                System.out.printf("%sInvalid input, please try again!%s%n", ANSI_RED, ANSI_RESET);
+            }
+        } while(true);
+    }
 
+    public static void searchProject() throws SQLException {
+        Scanner in = new Scanner(System.in);
+        System.out.println("Search for project");
+        boolean match = false;
+        do {
+            System.out.print("Project ID: ");
+            int searchID = in.nextInt();
+            PreparedStatement getProjectIDs = null;
+            try {
+                getProjectIDs = connection.prepareCall("SELECT fldProjectID FROM tblTest");
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+            try {
+                ResultSet projectIDs = getProjectIDs.executeQuery();
+                while (projectIDs.next()) {
+                    int projectID = projectIDs.getInt("fldProjectID");
+                    if (searchID == projectID) {
+                        match = true;
+                        displayProject(searchID);
+                        break;
+                    }
+                }
+                if (match != true) {
+                    System.out.printf("%sThere is no project with that ID, please try again!%s%n", ANSI_RED, ANSI_RESET);
+                }
+            } catch (SQLException e) {
 
+            }
+
+        } while (!match);
+    }
+
+    public static void displayProject(int projectID) {
+        PreparedStatement getProject = null;
+        try {
+            getProject = connection.prepareCall("SELECT * FROM tblTest where fldProjectID=" + projectID);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        try {
+            ResultSet projectDetails = getProject.executeQuery();
+            while (projectDetails.next()) {
+                String projectName = projectDetails.getString("fldProjectName");
+                String projectStart = projectDetails.getString("fldProjectStart");
+                String projectEnd = projectDetails.getString("fldProjectEnd");
+
+                System.out.println("Project name: " + projectName);
+                System.out.println("Start date: " + projectStart);
+                System.out.println("End date: " + projectEnd);
+            }
+            String promptUpdate = "Would you like to update project? input [yes] or [no]";
+            boolean updateProject = askYesNo(promptUpdate);
+            if (updateProject) {
+                System.out.println("Update project!");
+            }
+        } catch (SQLException e) {
+
+        }
+    }
 
     // ANSI escape code colors.
     // from -> https://stackoverflow.com/questions/5762491/how-to-print-color-in-console-using-system-out-println
