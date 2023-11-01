@@ -3,19 +3,21 @@ import java.util.Properties;
 import java.util.Scanner;
 
 public class Main{
-
     // JDBC PROPS
     public static final String USERNAME = "sa";
     public static final String PASSWORD = "1234";
     public static final String DATABASE_NAME = "dbTest";
-    public static final String PORT = "1433";
-    public static final String ENCRYPT = "false";
+    public static final String PORT = "1434";
+    public static final String ENCRYPT =
+            "false";
     public static final String URL = "jdbc:sqlserver://localhost:"+ PORT +";databaseName="+DATABASE_NAME;
 
     public static Connection connection = null;
 
 
     public static void main(String[] args) {
+
+        editProject();
 
         System.out.printf("%sProgram starting.%s%n", ANSI_YELLOW, ANSI_RESET);
 
@@ -118,7 +120,7 @@ public class Main{
 
             resultSet.close();
         } catch (SQLException e) {
-
+            
         }
 
 
@@ -141,6 +143,18 @@ public class Main{
 
         // returns input.
         return input;
+    }
+
+    public static void editProject(){
+        
+        System.out.printf("%s%S",ANSI_RESET,"Update:");
+        getUserInput();
+        try{
+            CallableStatement preparedStatement = connection.prepareCall("");
+        } catch (SQLException e){
+            
+        }
+
     }
 
     // ANSI escape code colors.
