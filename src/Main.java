@@ -48,7 +48,10 @@ public class Main{
             throw new RuntimeException(e);
         }
 
-        System.out.println("Closed connection!");
+        // closing connection to JDBC
+        System.out.printf("%sClosing connection to JDBC..%s", ANSI_YELLOW, ANSI_RESET);
+
+
 
     }
 
@@ -56,6 +59,7 @@ public class Main{
 
         // initializes connection.
         Connection connection = null;
+
         // JDBC tryes to connect to SQL database add URL.
         try {
             connection = DriverManager.getConnection(URL, properties);
@@ -63,8 +67,6 @@ public class Main{
             throw new RuntimeException(e);
         }
 
-
-        System.out.println("Hello JDBC");
         return connection;
 
     }
@@ -99,19 +101,6 @@ public class Main{
         }
 
 
-
-
-        /* ---------------------------------------------------------------------------------------------
-            End of example.
-        */
-
-        // closing connection to JDBC
-        System.out.printf("%sClosing connection to JDBC..%s", ANSI_YELLOW, ANSI_RESET);
-        try {
-            connection.close();
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     // ANSI escape code colors.
