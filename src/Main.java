@@ -1,15 +1,13 @@
-import javax.sound.midi.SoundbankResource;
 import java.sql.*;
 import java.util.Properties;
 import java.util.Scanner;
-import java.util.concurrent.locks.Condition;
-
 
 public class Main{
+
     // JDBC PROPS
     public static final String USERNAME = "sa";
     public static final String PASSWORD = "1234";
-    public static final String DATABASE_NAME = "dbTest";
+    public static final String DATABASE_NAME = "dbChrono5";
     public static final String PORT = "1433";
     public static final String ENCRYPT = "false";
     public static final String URL = "jdbc:sqlserver://localhost:"+ PORT +";databaseName="+DATABASE_NAME;
@@ -29,12 +27,12 @@ public class Main{
         connection = databaseConnection(properties, URL);
         System.out.printf("%sCreating connection.%s%n", ANSI_YELLOW, ANSI_RESET);
 
-        System.out.println(DateFormattingWithValidation());
+        //System.out.println(DateFormattingWithValidation());
 
+        editProject();
 
         // closing JDBC connection
         databaseClose(connection);
-
 
     }
 
@@ -93,8 +91,38 @@ public class Main{
         return connection;
 
     }
+    public static void test(){
 
-    /***
+        PreparedStatement preparedStatement = null;
+        try {
+            preparedStatement = connection.prepareCall("SELECT * FROM tblUser");
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+
+        try {
+            // Assuming you already have a PreparedStatement object named preparedStatement
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            while (resultSet.next()) {
+                // Assuming "tblUser" has columns like "column1", "column2", etc.
+                int column1Value = resultSet.getInt("fldID");
+                String column2Value = resultSet.getString("fldName");
+                // Retrieve other columns as needed
+
+                System.out.println("column1: " + column1Value + ", column2: " + column2Value);
+                // Print other columns as needed
+            }
+
+            resultSet.close();
+        } catch (SQLException e) {
+
+        }
+
+
+    }
+     /**
      * method for getting a userinput as a string. and closing scanner again.
      * @return userinput.
      */
@@ -214,7 +242,7 @@ public class Main{
      * @param value The value you want to change.
      * @param Condition The condition of the change.
      */
-    public static void editProject(Connection connection, String tableName, String column, String value, String Condition) {
+    public static void editProjectUpdateSql(Connection connection, String tableName, String column, String value, String Condition) {
         try {
             //Prepare SQL
             PreparedStatement preparedStatement = connection.prepareCall("UPDATE " + tableName + " SET " + column + " = '" + value + "' WHERE " + Condition);
@@ -234,7 +262,6 @@ public class Main{
     // from -> https://stackoverflow.com/questions/5762491/how-to-print-color-in-console-using-system-out-println
     public static final String ANSI_RESET = "\u001B[0m";
     public static final String ANSI_RED = "\u001B[31m";
-
     public static final String ANSI_GREEN = "\u001B[32m";
     public static final String ANSI_YELLOW = "\u001B[33m";
 
