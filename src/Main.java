@@ -1,3 +1,4 @@
+import javax.sound.midi.SoundbankResource;
 import java.sql.*;
 import java.util.Properties;
 
@@ -15,11 +16,15 @@ public class Main{
 
     public static void main(String[] args) {
 
+        System.out.printf("%sProgram starting.%s%n", ANSI_YELLOW, ANSI_RESET);
+
         // getting props
         Properties properties = setProps();
+        System.out.printf("%sSetting up props.%s%n", ANSI_YELLOW, ANSI_RESET);
 
         // creating JDBC connection
         Connection connection = databaseConnection(properties, URL);
+        System.out.printf("%sCreating connection.%s%n", ANSI_YELLOW, ANSI_RESET);
 
         // test
         test(connection);
@@ -30,6 +35,11 @@ public class Main{
 
     }
 
+    /***
+     * Properties method used to create a propertie containing all props used to
+     * connect to JDBC
+     * @return properties
+     */
     public static Properties setProps(){
         // creating a intestines of properties.
         Properties properties = new Properties();
@@ -41,6 +51,10 @@ public class Main{
         return properties;
     }
 
+    /***
+     * Method used to close a database connection.
+     * @param connection
+     */
     public static void databaseClose(Connection connection){
         try {
             connection.close();
@@ -55,6 +69,12 @@ public class Main{
 
     }
 
+    /***
+     * method for creating a connection to a database
+     * @param properties
+     * @param URL
+     * @return
+     */
     public static Connection databaseConnection(Properties properties, String URL){
 
         // initializes connection.
