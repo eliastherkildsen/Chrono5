@@ -7,7 +7,7 @@ public class Main{
     // JDBC PROPS
     public static final String USERNAME = "sa";
     public static final String PASSWORD = "1234";
-    public static final String DATABASE_NAME = "dbTest";
+    public static final String DATABASE_NAME = "dbChrono5";
     public static final String PORT = "1433";
     public static final String ENCRYPT = "false";
     public static final String URL = "jdbc:sqlserver://localhost:"+ PORT +";databaseName="+DATABASE_NAME;
@@ -27,8 +27,8 @@ public class Main{
         connection = databaseConnection(properties, URL);
         System.out.printf("%sCreating connection.%s%n", ANSI_YELLOW, ANSI_RESET);
 
-        //System.out.println(DateFormattingWithValidation());
-
+        createProject();
+        //System.out.println(dateFormattingWithValidation());
 
         // closing JDBC connection
         databaseClose(connection);
@@ -222,13 +222,13 @@ public class Main{
             System.out.print("Enter year (YYYY): ");
             year = getUserInputInt();
             // checks if the year is in the vaild range.
-            if (year >= 2022 && year >= 2030){
+            if (year >= 2022 && year <= 2030){
                 break;
             }
 
             // sends error message to user.
             System.out.printf("%sYou have entered a value  witch is not a vaild. " +
-                    "day! please enter a year between 2022 and 2023%s%n", ANSI_RED,ANSI_RESET);
+                    "day! please enter a year between 2022 and 2030%s%n", ANSI_RED,ANSI_RESET);
 
         } while (true);
 
@@ -237,26 +237,43 @@ public class Main{
 
     }
 
-    public static void CreateProject(){
+    public static void createProject(){
 
         String projectStartDate;
         String projectEndDate;
         String projectName;
 
 
-        // prompts the user to enter a project name.
+        // prompts the user to enter a project name and saves the input.
         System.out.printf("Pleas give your project a name %n");
         projectName = getUserInputStr();
 
-        // prompt user to create a project start data.
+        // prompt user to create a project start dat and saves the input.
         System.out.printf("Please enter information relating to the project start date%n");
         projectStartDate = dateFormattingWithValidation();
 
-        // prompt user to create a project start data.
+        // prompt user to create a project start data and saves the input.
         System.out.printf("Please enter information relating to the project end date%n");
         projectEndDate = dateFormattingWithValidation();
 
+        // SQL calls!
+        PreparedStatement preparedStatement = null;
 
+        // preparing SQL statement.
+        try {
+            preparedStatement = connection.prepareCall("INSERT INTO tblProject (fldProjectStartDate, fldProjectEndDate, fldProjectName)" +
+                    " VALUES ('" + projectStartDate + "', '" + projectEndDate + "', '" + projectName + "')");
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        try {
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
 
     }
 
