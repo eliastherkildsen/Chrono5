@@ -1,13 +1,15 @@
+import javax.sound.midi.SoundbankResource;
 import java.sql.*;
 import java.util.Properties;
 import java.util.Scanner;
+import java.util.concurrent.locks.Condition;
+
 
 public class Main{
-
     // JDBC PROPS
     public static final String USERNAME = "sa";
     public static final String PASSWORD = "1234";
-    public static final String DATABASE_NAME = "dbChrono5";
+    public static final String DATABASE_NAME = "dbTest";
     public static final String PORT = "1433";
     public static final String ENCRYPT = "false";
     public static final String URL = "jdbc:sqlserver://localhost:"+ PORT +";databaseName="+DATABASE_NAME;
@@ -27,8 +29,8 @@ public class Main{
         connection = databaseConnection(properties, URL);
         System.out.printf("%sCreating connection.%s%n", ANSI_YELLOW, ANSI_RESET);
 
-        createProject();
-        //System.out.println(dateFormattingWithValidation());
+        System.out.println(DateFormattingWithValidation());
+
 
         // closing JDBC connection
         databaseClose(connection);
@@ -92,38 +94,6 @@ public class Main{
 
     }
 
-    public static void test(){
-
-        PreparedStatement preparedStatement = null;
-        try {
-            preparedStatement = connection.prepareCall("SELECT * FROM tblUser");
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-
-
-        try {
-            // Assuming you already have a PreparedStatement object named preparedStatement
-            ResultSet resultSet = preparedStatement.executeQuery();
-
-            while (resultSet.next()) {
-                // Assuming "tblUser" has columns like "column1", "column2", etc.
-                int column1Value = resultSet.getInt("fldID");
-                String column2Value = resultSet.getString("fldName");
-                // Retrieve other columns as needed
-
-                System.out.println("column1: " + column1Value + ", column2: " + column2Value);
-                // Print other columns as needed
-            }
-
-            resultSet.close();
-        } catch (SQLException e) {
-
-        }
-
-
-    }
-
     /***
      * method for getting a userinput as a string. and closing scanner again.
      * @return userinput.
@@ -180,7 +150,7 @@ public class Main{
      * validates the inputs, and returns them in a string formated DD.MM.YY
      * @return formateddate
      */
-    public static String dateFormattingWithValidation() {
+    public static String DateFormattingWithValidation() {
 
         int day;
         int month;
@@ -222,13 +192,13 @@ public class Main{
             System.out.print("Enter year (YYYY): ");
             year = getUserInputInt();
             // checks if the year is in the vaild range.
-            if (year >= 2022 && year <= 2030){
+            if (year >= 2022 && year >= 2030){
                 break;
             }
 
             // sends error message to user.
             System.out.printf("%sYou have entered a value  witch is not a vaild. " +
-                    "day! please enter a year between 2022 and 2030%s%n", ANSI_RED,ANSI_RESET);
+                    "day! please enter a year between 2022 and 2023%s%n", ANSI_RED,ANSI_RESET);
 
         } while (true);
 
@@ -236,45 +206,28 @@ public class Main{
 
 
     }
-
-    public static void createProject(){
-
-        String projectStartDate;
-        String projectEndDate;
-        String projectName;
-
-
-        // prompts the user to enter a project name and saves the input.
-        System.out.printf("Pleas give your project a name %n");
-        projectName = getUserInputStr();
-
-        // prompt user to create a project start dat and saves the input.
-        System.out.printf("Please enter information relating to the project start date%n");
-        projectStartDate = dateFormattingWithValidation();
-
-        // prompt user to create a project start data and saves the input.
-        System.out.printf("Please enter information relating to the project end date%n");
-        projectEndDate = dateFormattingWithValidation();
-
-        // SQL calls!
-        PreparedStatement preparedStatement = null;
-
-        // preparing SQL statement.
+    /**
+     * Sending a SQL UPDATE to the DB to change fields. Includes basic SQL error handling.
+     * @param connection To function with our DB
+     * @param tableName Name of the table you want to edit.
+     * @param column Name of the column you want to change.
+     * @param value The value you want to change.
+     * @param Condition The condition of the change.
+     */
+    public static void editProject(Connection connection, String tableName, String column, String value, String Condition) {
         try {
-            preparedStatement = connection.prepareCall("INSERT INTO tblProject (fldProjectStartDate, fldProjectEndDate, fldProjectName)" +
-                    " VALUES ('" + projectStartDate + "', '" + projectEndDate + "', '" + projectName + "')");
+            //Prepare SQL
+            PreparedStatement preparedStatement = connection.prepareCall("UPDATE " + tableName + " SET " + column + " = '" + value + "' WHERE " + Condition);
 
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
+            //Execute it.
+            int row = preparedStatement.executeUpdate();
+            System.out.printf("%s%S%d%n",ANSI_YELLOW,"rows affected: ",row);
 
-        try {
-            preparedStatement.executeUpdate();
+            //Catch Error with some what usable text if relevant.
         } catch (SQLException e) {
+            System.out.println("Error: ");
             e.printStackTrace();
-            throw new RuntimeException(e);
         }
-
     }
 
     // ANSI escape code colors.
