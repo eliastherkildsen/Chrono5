@@ -27,6 +27,12 @@ public class Main{
         connection = databaseConnection(properties, URL);
         System.out.printf("%sCreating connection.%s%n", ANSI_YELLOW, ANSI_RESET);
 
+        //int input = getUserInputInt();
+        //System.out.println(input);
+
+        handleProject();
+
+
         // closing JDBC connection
         databaseClose(connection);
 
@@ -159,7 +165,6 @@ public class Main{
                 }
 
                 break;
-
 
             }
             // if a none numeric value is entered.
@@ -304,6 +309,25 @@ public class Main{
         } while(true);
     }
 
+    /**
+     * method for handling project. Let user handle a project.
+     */
+    public static void handleProject() {
+        Scanner in = new Scanner(System.in);
+        do {
+            System.out.print("Input [1] to search for project. Input [2] to create a new project: ");
+            int input = in.nextInt();
+            if (input == 1) {
+                searchProject();
+                break;
+            } else if (input == 2) {
+                //createProject();
+                break;
+            } else {
+                System.out.printf("%sInvalid input, please try again!%s%n", ANSI_RED, ANSI_RESET);
+            }
+        } while (true);
+    }
 
     public static void searchProject() {
         Scanner in = new Scanner(System.in);
@@ -365,7 +389,6 @@ public class Main{
 
         }
     }
-
 
     // ANSI escape code colors.
     // from -> https://stackoverflow.com/questions/5762491/how-to-print-color-in-console-using-system-out-println
