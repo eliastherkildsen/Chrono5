@@ -30,7 +30,7 @@ public class Main{
         //int input = getUserInputInt();
         //System.out.println(input);
 
-        searchProject();
+        handleProject();
 
 
         // closing JDBC connection
@@ -201,6 +201,26 @@ public class Main{
                 System.out.printf("%sInvalid input, please try again!%s%n", ANSI_RED, ANSI_RESET);
             }
         } while(true);
+    }
+
+    /**
+     * method for handling project. Let user handle a project.
+     */
+    public static void handleProject() {
+        Scanner in = new Scanner(System.in);
+        do {
+            System.out.print("Input [1] to search for project. Input [2] to create a new project: ");
+            int input = in.nextInt();
+            if (input == 1) {
+                searchProject();
+                break;
+            } else if (input == 2) {
+                //createProject();
+                break;
+            } else {
+                System.out.printf("%sInvalid input, please try again!%s%n", ANSI_RED, ANSI_RESET);
+            }
+        } while (true);
     }
 
     public static void searchProject() {
