@@ -29,8 +29,6 @@ public class Main{
         connection = databaseConnection(properties, URL);
         System.out.printf("%sCreating connection.%s%n", ANSI_YELLOW, ANSI_RESET);
 
-        handleProject();
-
         // closing JDBC connection
         databaseClose(connection);
 
@@ -90,37 +88,6 @@ public class Main{
         }
 
         return connection;
-
-    }
-    public static void test(){
-
-        PreparedStatement preparedStatement = null;
-        try {
-            preparedStatement = connection.prepareCall("SELECT * FROM tblUser");
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-
-
-        try {
-            // Assuming you already have a PreparedStatement object named preparedStatement
-            ResultSet resultSet = preparedStatement.executeQuery();
-
-            while (resultSet.next()) {
-                // Assuming "tblUser" has columns like "column1", "column2", etc.
-                int column1Value = resultSet.getInt("fldID");
-                String column2Value = resultSet.getString("fldName");
-                // Retrieve other columns as needed
-
-                System.out.println("column1: " + column1Value + ", column2: " + column2Value);
-                // Print other columns as needed
-            }
-
-            resultSet.close();
-        } catch (SQLException e) {
-
-        }
-
 
     }
 
@@ -252,16 +219,14 @@ public class Main{
 
 
         // prompts the user to enter a project name and saves the input.
-        System.out.printf("Pleas give your project a name %n");
-        projectName = getUserInputStr();
+        projectName = getProjectName();
 
         // prompt user to create a project start date and saves the input.
-        System.out.printf("Please enter information relating to the project start date%n");
-        projectStartDate = dateFormattingWithValidation();
+        projectStartDate = getProjectDate("start date");
 
-        // prompt user to create a project start data and saves the input.
-        System.out.printf("Please enter information relating to the project end date%n");
-        projectEndDate = dateFormattingWithValidation();
+        // prompt user to create a project end date and saves the input.
+        projectEndDate = getProjectDate("end date");
+
 
         // preparing SQL quarry.
         String quarryValues = String.format("('" + projectStartDate + "'," + "'" + projectEndDate + "'," + "'" + projectName + "')");
@@ -285,6 +250,56 @@ public class Main{
             throw new RuntimeException(e);
         }
 
+    }
+
+    /***
+     * Method prompts the user to enter start date for project
+     * @param date
+     * @return
+     */
+    private static String getProjectDate(String date) {
+        String formattedDate;
+        do {
+            System.out.printf("Please enter information relating to the %s %n", date);
+            formattedDate = dateFormattingWithValidation();
+
+            // prompts the user to check if the entered name is correct!
+            String prompt = String.format("Is %s%s%s the correct %s for your project? %n enter " +
+                    "[yes] to continue or enter [no] to try again!",ANSI_GREEN, formattedDate, ANSI_RESET, date);
+            if (askYesNo(prompt)){
+                break;
+            }
+
+        }while (true);
+
+        return formattedDate;
+
+    }
+
+    /***
+     * Method prompts the user for a project name, and
+     * gives the user the ability to re-enter the project name.
+     * @return the project name.
+     */
+    private static String getProjectName() {
+        // initialise variables.
+        String projectName;
+        do {
+            // prompts the user to enter a project name.
+            System.out.printf("Pleas give your project a name %n");
+            projectName = getUserInputStr();
+
+            // prompts the user to check if the entered name is correct!
+            String prompt = String.format("Is %s%s%s the correct name for your project? %n " +
+                    "enter [yes] to continue or enter [no] to try again!",ANSI_GREEN, projectName, ANSI_RESET);
+
+            // checks if the user wants to retry entering the project name.
+            if (askYesNo(prompt)){
+                break;
+            }
+        }while (true);
+
+        return projectName;
     }
 
     /**
