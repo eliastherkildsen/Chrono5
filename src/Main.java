@@ -1,4 +1,6 @@
 import java.sql.*;
+import java.util.Locale;
+import java.util.Objects;
 import java.util.Properties;
 import java.util.Scanner;
 
@@ -30,6 +32,8 @@ public class Main{
         //System.out.println(DateFormattingWithValidation());
 
         //editProject();
+        deleteProjectSql(connection, 7);
+
 
         // closing JDBC connection
         databaseClose(connection);
@@ -133,7 +137,7 @@ public class Main{
 
         // reads input.
         input = scanner.nextLine();
-
+        input = input.toLowerCase(Locale.ROOT);
         // returns input.
         return input;
     }
@@ -249,11 +253,39 @@ public class Main{
 
             //Execute it.
             int row = preparedStatement.executeUpdate();
-            System.out.printf("%s%S%d%n",ANSI_YELLOW,"rows affected: ",row);
+            System.out.printf("%s%S%d%s%n",ANSI_YELLOW,"rows affected: ",row,ANSI_RESET);
 
             //Catch Error with some what usable text if relevant.
         } catch (SQLException e) {
-            System.out.println("Error: ");
+            System.out.printf("%s%S%s%n",ANSI_RED,"error:",ANSI_RESET);
+            e.printStackTrace();
+        }
+    }
+    public static void deleteProjectSql(Connection connection, int condition) {
+        try {
+            //Prepare SQL
+            PreparedStatement preparedStatement = connection.prepareCall("DELETE FROM tblProject WHERE fldProjectID = " + condition);
+            boolean areYouSure = false;
+
+            do {
+                System.out.printf("%s%S%n%s%S%S%n", ANSI_RED,"you are about to delete a project, are you sure?", ANSI_RESET, "TYPE: DELETE " + condition, ". or no");
+                String input = getUserInputStr();
+                    if (Objects.equals(input, "delete " + condition)) {
+                        int row = preparedStatement.executeUpdate();
+                        System.out.printf("%s%S%s%d%n", ANSI_YELLOW, "Deletion complete - rows affected: ", ANSI_RESET, row);
+                        areYouSure = true;
+                    } else if (Objects.equals(input, "no")) {
+                        System.out.printf("%s%S%s%n", ANSI_YELLOW, "Cancelling..", ANSI_RESET);
+                        areYouSure = true;
+                    } else {
+                        System.out.printf("%s%S%s%n", ANSI_YELLOW,"Invalid Input.",ANSI_RESET);
+                        areYouSure = false;
+                    }
+            } while(!areYouSure);
+
+            //Catch Error with somewhat usable text if relevant.
+        } catch (SQLException e) {
+            System.out.printf("%s%S%s%n",ANSI_RED,"error:",ANSI_RESET);
             e.printStackTrace();
         }
     }
