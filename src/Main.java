@@ -308,12 +308,16 @@ public class Main{
      */
     public static boolean askYesNo(String prompt) {
         do {
+            //Prompt user to input yes or no
             System.out.print(prompt);
             String input = getUserInputStr();
+            //If input is yes return true
             if (input.equals("yes")) {
                 return true;
+            //If input is no return false
             } else if (input.equals("no")) {
                 return false;
+            //If invalid input print error-message and repeat prompt
             } else {
                 System.out.printf("%sInvalid input, please try again!%s%n", ANSI_RED, ANSI_RESET);
             }
@@ -326,14 +330,18 @@ public class Main{
     public static void handleProject() {
         Scanner in = new Scanner(System.in);
         do {
+            //Prompt user to input 1 or 2
             System.out.print("Input [1] to search for project. Input [2] to create a new project: ");
             int input = in.nextInt();
+            //If input is 1 then search project
             if (input == 1) {
                 searchProject();
                 break;
+            //If input is 2 then create project
             } else if (input == 2) {
                 createProject();
                 break;
+            //If invalid input print error-message and repeat prompt
             } else {
                 System.out.printf("%sInvalid input, please try again!%s%n", ANSI_RED, ANSI_RESET);
             }
@@ -371,7 +379,7 @@ public class Main{
                         break;
                     }
                 }
-                //If not matched, print error-message and repeat searchProject
+                //If not matched, print error-message and repeat prompt
                 if (match != true) {
                     System.out.printf("%sThere is no project with that ID, please try again!%s%n", ANSI_RED, ANSI_RESET);
                 }
@@ -384,13 +392,15 @@ public class Main{
      * @param projectID to display.
      */
     public static void displayProject(int projectID) {
-        //Initializing
+        //Prepare SQl-statement
         PreparedStatement getProject = null;
+        //Get project from projectID in database with SQl-statement
         try {
             getProject = connection.prepareCall("SELECT * FROM tblProject where fldProjectID=" + projectID);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
+        //Display project details
         try {
             ResultSet projectDetails = getProject.executeQuery();
             while (projectDetails.next()) {
@@ -402,14 +412,13 @@ public class Main{
                 System.out.println("Start date: " + projectStart);
                 System.out.println("End date: " + projectEnd);
             }
+            //Prompt user for choice, let user chose to update
             String promptUpdate = "Would you like to update project? input [yes] or [no]: ";
             boolean updateProject = askYesNo(promptUpdate);
             if (updateProject) {
                 // editProjectUpdateSql();
             }
-        } catch (SQLException e) {
-
-        }
+        } catch (SQLException e) {}
     }
     /**
      * Sending a SQL UPDATE to the DB to change fields. Includes basic SQL error handling.
