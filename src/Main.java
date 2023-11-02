@@ -500,7 +500,9 @@ public class Main{
             //Prepare SQL
             PreparedStatement preparedStatement = connection.prepareCall("DELETE FROM tblProject WHERE fldProjectID = " + condition);
             boolean areYouSure = false;
+            //Lets display the project for the user.
             displayProject(condition);
+            //Lets make sure this is what the user wants to happen.
             do {
                 System.out.printf("%s%S%s%n%S%n%S%n", ANSI_RED,"you are about to delete project " + condition + ", are you sure?", ANSI_RESET, "TYPE: DELETE " + condition, "or no to cancel.");
                 String input = getUserInputStr();
@@ -516,12 +518,13 @@ public class Main{
                     areYouSure = false;
                 }
             } while(!areYouSure);
-
             //Catch Error with somewhat usable text if relevant.
         } catch (SQLException e) {
             System.out.printf("%s%S%s%n",ANSI_RED,"error:",ANSI_RESET);
             e.printStackTrace();
         }
+        //Lets go home to mainMenu
+        mainMenu();
     }
 
     /***
@@ -557,6 +560,7 @@ public class Main{
      * updateProjectInterface facilitates the use of update and delete.
      */
     public static void updateProjectInterface () {
+        //Setting up variables.
         int projectId = 1;
         boolean doWhileAction1;
         boolean doWhileAction2;
@@ -564,17 +568,24 @@ public class Main{
         String value = "";
         String condition = "fldProjectID = " + projectId;
 
+        //Welcome message to module, and display of project being edited.
         System.out.printf("%n%s%S%s%n",ANSI_YELLOW,"Update your project.",ANSI_RESET);
         displayProject(projectId);
 
+        //do while to find out if edit or delete.
         do {
+            //User input, int to keep simple.
             System.out.printf("%n%s%n","Which action do you want?");
             int actionChosen = getUserInputInt("To EDIT type 1 or 2 to DELETE:%n");
-            doWhileAction1 = false;
+            doWhileAction1 = false; //To be certain its false.
+
+            //If statement to find edit-1 or delete-2.
             if (actionChosen == 1) {
                 displayProject(projectId);
-                System.out.printf("%S%n%S%n%S%n", "[1] - Project Name", "[2] - Start Date", "[3] - End Date");
-                actionChosen = getUserInputInt("Type 1 - 2 - 3 depending on field you wish to change:%n");
+                System.out.printf("%S%n%S%n%S%n%S%n", "[1] - Project Name", "[2] - Start Date", "[3] - End Date", "[4] - Goto Main Menu");
+                actionChosen = getUserInputInt("Type 1 - 2 - 3 - 4 depending on field you wish to change:%n");
+
+                //If we are editing, then finding what to edit OR if we just want to quit. 1-4
                 do {
                     doWhileAction2 = false;
                     switch (actionChosen) {
@@ -584,6 +595,7 @@ public class Main{
                             System.out.printf("%s","Please input new Project Name: ");
                             value = getUserInputStr();
                             doWhileAction2 = true;
+                            editProjectUpdateSql(connection, column, value, condition);
                             break;
                         case 2:
                             System.out.printf("%s%n", "[2] - Start Date");
@@ -591,6 +603,7 @@ public class Main{
                             System.out.printf("%s","Please input new Start Date: ");
                             value = dateFormattingWithValidation();
                             doWhileAction2 = true;
+                            editProjectUpdateSql(connection, column, value, condition);
                             break;
                         case 3:
                             System.out.printf("%s%n", "[3] - End Date");
@@ -598,13 +611,19 @@ public class Main{
                             System.out.printf("%s","Please input new End Date: ");
                             value = dateFormattingWithValidation();
                             doWhileAction2 = true;
+                            editProjectUpdateSql(connection, column, value, condition);
                             break;
+                        case 4:
+                            System.out.printf("%s%n", "[4] - Exiting - Going to Main Menu");
+                            doWhileAction2 = true;
                         default:
-                            System.out.printf("%s", "What?");
+                            System.out.printf("%s", "Error?");
                     }
                 } while (!doWhileAction2);
-                editProjectUpdateSql(connection, column, value, condition);
+                //Setting doWhileAction1 true, as we are done here.
                 doWhileAction1 = true;
+
+                //ELSE IF actionchosen 2, then we are deleting a project.
             } else if (actionChosen == 2) {
                 deleteProjectSql(connection, projectId);
                 doWhileAction1 = true;
@@ -612,8 +631,8 @@ public class Main{
                 System.out.printf("%s%S%s",ANSI_RED,"Please try again.",ANSI_RESET);
             }
         } while (!doWhileAction1);
-
-
+        //Going home to mainMenu
+        mainMenu();
     }
 
     // ANSI escape code colors.
