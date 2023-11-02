@@ -29,6 +29,8 @@ public class Main{
         connection = databaseConnection(properties, URL);
         System.out.printf("%sCreating connection.%s%n", ANSI_YELLOW, ANSI_RESET);
 
+        handleProject();
+
         // closing JDBC connection
         databaseClose(connection);
 
@@ -290,10 +292,9 @@ public class Main{
      * @return true if input is yes, false if input is no.
      */
     public static boolean askYesNo(String prompt) {
-        Scanner in = new Scanner(System.in);
         do {
             System.out.print(prompt);
-            String input = in.nextLine().toLowerCase();
+            String input = getUserInputStr();
             if (input.equals("yes")) {
                 return true;
             } else if (input.equals("no")) {
@@ -305,7 +306,7 @@ public class Main{
     }
 
     /**
-     * method for handling project. Let user handle a project.
+     * method for handling project. Lets user handle a project.
      */
     public static void handleProject() {
         Scanner in = new Scanner(System.in);
@@ -316,7 +317,7 @@ public class Main{
                 searchProject();
                 break;
             } else if (input == 2) {
-                //createProject();
+                createProject();
                 break;
             } else {
                 System.out.printf("%sInvalid input, please try again!%s%n", ANSI_RED, ANSI_RESET);
@@ -324,40 +325,51 @@ public class Main{
         } while (true);
     }
 
+    /**
+     * method for searching project. Lets user search a project.
+     */
     public static void searchProject() {
-        Scanner in = new Scanner(System.in);
+        //Search for project
         System.out.println("Search for project");
         boolean match = false;
         do {
-            System.out.print("Project ID: ");
-            int searchID = in.nextInt();
+            //Prompt user for ID, use input to search in database
+            String promptID = "Project ID: ";
+            int searchID = getUserInputInt(promptID);
+            //Prepare SQL-statement
             PreparedStatement getProjectIDs = null;
+            //Get all IDs from database with SQL-statement
             try {
                 getProjectIDs = connection.prepareCall("SELECT fldProjectID FROM tblProject");
             } catch (SQLException e) {
                 throw new RuntimeException(e);
             }
+            //Check if input match with any ID from database
             try {
                 ResultSet projectIDs = getProjectIDs.executeQuery();
                 while (projectIDs.next()) {
                     int projectID = projectIDs.getInt("fldProjectID");
+                    //If matched, end searchProject and then call displayProject
                     if (searchID == projectID) {
                         match = true;
                         displayProject(searchID);
                         break;
                     }
                 }
+                //If not matched, print error-message and repeat searchProject
                 if (match != true) {
                     System.out.printf("%sThere is no project with that ID, please try again!%s%n", ANSI_RED, ANSI_RESET);
                 }
-            } catch (SQLException e) {
-
-            }
-
+            } catch (SQLException e) {}
         } while (!match);
     }
 
+    /**
+     * method for displaying project.
+     * @param projectID to display.
+     */
     public static void displayProject(int projectID) {
+        //Initializing
         PreparedStatement getProject = null;
         try {
             getProject = connection.prepareCall("SELECT * FROM tblProject where fldProjectID=" + projectID);
@@ -378,7 +390,7 @@ public class Main{
             String promptUpdate = "Would you like to update project? input [yes] or [no]: ";
             boolean updateProject = askYesNo(promptUpdate);
             if (updateProject) {
-                System.out.println("Update project!");
+                // editProjectUpdateSql();
             }
         } catch (SQLException e) {
 
