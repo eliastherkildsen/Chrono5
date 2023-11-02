@@ -29,6 +29,8 @@ public class Main{
         connection = databaseConnection(properties, URL);
         System.out.printf("%sCreating connection.%s%n", ANSI_YELLOW, ANSI_RESET);
 
+        deleteProjectSql(connection, 8);
+
         // closing JDBC connection
         databaseClose(connection);
 
@@ -367,19 +369,21 @@ public class Main{
         try {
             ResultSet projectDetails = getProject.executeQuery();
             while (projectDetails.next()) {
+                String projectId = projectDetails.getString("fldProjectID");
                 String projectName = projectDetails.getString("fldProjectName");
                 String projectStart = projectDetails.getString("fldProjectStartDate");
                 String projectEnd = projectDetails.getString("fldProjectEndDate");
 
-                System.out.println("Project name: " + projectName);
-                System.out.println("Start date: " + projectStart);
-                System.out.println("End date: " + projectEnd);
+                System.out.printf("%s%s%n",ANSI_GREEN,"Project ID: " + projectId);
+                System.out.printf("%s%n","Project name: " + projectName);
+                System.out.printf("%s%n","Start date: " + projectStart);
+                System.out.printf("%s%s%n","End date: " + projectEnd,ANSI_RESET);
             }
-            String promptUpdate = "Would you like to update project? input [yes] or [no]: ";
+            /*String promptUpdate = "Would you like to update project? input [yes] or [no]: ";
             boolean updateProject = askYesNo(promptUpdate);
             if (updateProject) {
                 System.out.println("Update project!");
-            }
+            }*/
         } catch (SQLException e) {
 
         }
@@ -412,9 +416,9 @@ public class Main{
             //Prepare SQL
             PreparedStatement preparedStatement = connection.prepareCall("DELETE FROM tblProject WHERE fldProjectID = " + condition);
             boolean areYouSure = false;
-
+            displayProject(condition);
             do {
-                System.out.printf("%s%S%n%s%S%S%n", ANSI_RED,"you are about to delete a project, are you sure?", ANSI_RESET, "TYPE: DELETE " + condition, ". or no");
+                System.out.printf("%s%S%s%n%S%n%S%n", ANSI_RED,"you are about to delete project " + condition + ", are you sure?", ANSI_RESET, "TYPE: DELETE " + condition, "or no to cancel.");
                 String input = getUserInputStr();
                 if (Objects.equals(input, "delete " + condition)) {
                     int row = preparedStatement.executeUpdate();
