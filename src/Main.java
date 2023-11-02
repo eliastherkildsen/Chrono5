@@ -1,4 +1,7 @@
 import java.sql.*;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.Properties;
@@ -29,8 +32,8 @@ public class Main{
         connection = databaseConnection(properties, URL);
         System.out.printf("%sCreating connection.%s%n", ANSI_YELLOW, ANSI_RESET);
 
-        //deleteProjectSql(connection, 8);
-        updateProjectInterface();
+        // OurMainMenu start of program
+        mainMenu();
 
         // closing JDBC connection
         databaseClose(connection);
@@ -56,7 +59,7 @@ public class Main{
 
     /***
      * Method used to close a database connection.
-     * @param connection
+     * @param connection to SQL DB.
      */
     public static void databaseClose(Connection connection){
         try {
@@ -76,7 +79,6 @@ public class Main{
      * method for creating a connection to a database
      * @param properties
      * @param URL
-     * @return
      */
     public static Connection databaseConnection(Properties properties, String URL){
 
@@ -91,37 +93,6 @@ public class Main{
         }
 
         return connection;
-
-    }
-    public static void test(){
-
-        PreparedStatement preparedStatement = null;
-        try {
-            preparedStatement = connection.prepareCall("SELECT * FROM tblUser");
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-
-
-        try {
-            // Assuming you already have a PreparedStatement object named preparedStatement
-            ResultSet resultSet = preparedStatement.executeQuery();
-
-            while (resultSet.next()) {
-                // Assuming "tblUser" has columns like "column1", "column2", etc.
-                int column1Value = resultSet.getInt("fldID");
-                String column2Value = resultSet.getString("fldName");
-                // Retrieve other columns as needed
-
-                System.out.println("column1: " + column1Value + ", column2: " + column2Value);
-                // Print other columns as needed
-            }
-
-            resultSet.close();
-        } catch (SQLException e) {
-
-        }
-
 
     }
 
@@ -250,19 +221,30 @@ public class Main{
         String projectStartDate;
         String projectEndDate;
         String projectName;
+        boolean isStartDateBeforeEnddate;
 
+        // prompts the user to enter project details, until the
+        // entered details are accepted as valid.
+        do {
 
-        // prompts the user to enter a project name and saves the input.
-        System.out.printf("Pleas give your project a name %n");
-        projectName = getUserInputStr();
+            // prompts the user to enter a project name and saves the input.
+            projectName = getProjectName();
 
-        // prompt user to create a project start date and saves the input.
-        System.out.printf("Please enter information relating to the project start date%n");
-        projectStartDate = dateFormattingWithValidation();
+            // prompt user to create a project start date and saves the input.
+            projectStartDate = getProjectDate("start date");
 
-        // prompt user to create a project start data and saves the input.
-        System.out.printf("Please enter information relating to the project end date%n");
-        projectEndDate = dateFormattingWithValidation();
+            // prompt user to create a project end date and saves the input.
+            projectEndDate = getProjectDate("end date");
+
+            // Checks if start date is before end date.
+            isStartDateBeforeEnddate = dateCheck(projectStartDate, projectEndDate);
+            if (isStartDateBeforeEnddate){
+                break;
+
+            }
+            // prompts user with error messages. and sends user back to method start.
+            System.out.printf("%sThe start date has to be before the enddate! please try again.%s%n", ANSI_RED, ANSI_RESET);
+        }while (true);
 
         // preparing SQL quarry.
         String quarryValues = String.format("('" + projectStartDate + "'," + "'" + projectEndDate + "'," + "'" + projectName + "')");
@@ -288,19 +270,72 @@ public class Main{
 
     }
 
+    /***
+     * Method prompts the user to enter start date for project
+     * @param date
+     * @return
+     */
+    private static String getProjectDate(String date) {
+        String formattedDate;
+        do {
+            System.out.printf("Please enter information relating to the %s %n", date);
+            formattedDate = dateFormattingWithValidation();
+
+            // prompts the user to check if the entered name is correct!
+            String prompt = String.format("Is %s%s%s the correct %s for your project? %n enter " +
+                    "[yes] to continue or enter [no] to try again!",ANSI_GREEN, formattedDate, ANSI_RESET, date);
+            if (askYesNo(prompt)){
+                break;
+            }
+
+        }while (true);
+
+        return formattedDate;
+
+    }
+
+    /***
+     * Method prompts the user for a project name, and
+     * gives the user the ability to re-enter the project name.
+     * @return the project name.
+     */
+    private static String getProjectName() {
+        // initialise variables.
+        String projectName;
+        do {
+            // prompts the user to enter a project name.
+            System.out.printf("Pleas give your project a name %n");
+            projectName = getUserInputStr();
+
+            // prompts the user to check if the entered name is correct!
+            String prompt = String.format("Is %s%s%s the correct name for your project? %n " +
+                    "enter [yes] to continue or enter [no] to try again!",ANSI_GREEN, projectName, ANSI_RESET);
+
+            // checks if the user wants to retry entering the project name.
+            if (askYesNo(prompt)){
+                break;
+            }
+        }while (true);
+
+        return projectName;
+    }
+
     /**
      * method prompts for an input, then checks if input is yes or no.
      * @return true if input is yes, false if input is no.
      */
     public static boolean askYesNo(String prompt) {
-        Scanner in = new Scanner(System.in);
         do {
+            //Prompt user to input yes or no
             System.out.print(prompt);
-            String input = in.nextLine().toLowerCase();
+            String input = getUserInputStr();
+            //If input is yes return true
             if (input.equals("yes")) {
                 return true;
+            //If input is no return false
             } else if (input.equals("no")) {
                 return false;
+            //If invalid input print error-message and repeat prompt
             } else {
                 System.out.printf("%sInvalid input, please try again!%s%n", ANSI_RED, ANSI_RESET);
             }
@@ -308,65 +343,105 @@ public class Main{
     }
 
     /**
-     * method for handling project. Let user handle a project.
+     * method for choosing function. Lets user choose what function to process in program.
+     */
+    public static void mainMenu() {
+        do {
+            //Prompt user to input 1, 2 or 3 i.e. choose function
+            System.out.println("Please choose a function");
+            System.out.println("[1] to handle project");
+            System.out.println("[2] to administer customer");
+            System.out.println("[3] to administer consultant");
+            System.out.println("[exit] to exit program");
+            System.out.print("Input: ");
+            String input = getUserInputStr();
+            //Run function corresponding with input, repeat until user input exit
+            switch (input) {
+                case "1": handleProject(); break;
+                case "2": /*administerCustomer*/ break;
+                case "3": /*administerConsultant*/ break;
+                case "exit": System.exit(0);
+                default: System.out.printf("%sInvalid input, please try again!%s%n", ANSI_RED, ANSI_RESET);
+            }
+        } while (true);
+    }
+
+    /**
+     * method for handling project. Lets user handle a project.
      */
     public static void handleProject() {
-        Scanner in = new Scanner(System.in);
         do {
-            System.out.print("Input [1] to search for project. Input [2] to create a new project: ");
-            int input = in.nextInt();
+            //Prompt user to input 1 or 2 i.e. choose function
+            String prompt = "Input [1] to search for project. Input [2] to create a new project: ";
+            int input = getUserInputInt(prompt);
+            //If input is 1 then search project
             if (input == 1) {
                 searchProject();
                 break;
+            //If input is 2 then create project
             } else if (input == 2) {
-                //createProject();
+                createProject();
                 break;
+            //If invalid input print error-message and repeat prompt
             } else {
                 System.out.printf("%sInvalid input, please try again!%s%n", ANSI_RED, ANSI_RESET);
             }
         } while (true);
     }
 
+    /**
+     * method for searching project. Lets user search a project.
+     */
     public static void searchProject() {
-        Scanner in = new Scanner(System.in);
+        //Search for project
         System.out.println("Search for project");
         boolean match = false;
         do {
-            System.out.print("Project ID: ");
-            int searchID = in.nextInt();
+            //Prompt user for ID, use input to search in database
+            String promptID = "Project ID: ";
+            int searchID = getUserInputInt(promptID);
+            //Prepare SQL-statement
             PreparedStatement getProjectIDs = null;
+            //Get all IDs from database with SQL-statement
             try {
                 getProjectIDs = connection.prepareCall("SELECT fldProjectID FROM tblProject");
             } catch (SQLException e) {
                 throw new RuntimeException(e);
             }
+            //Check if input match with any ID from database
             try {
                 ResultSet projectIDs = getProjectIDs.executeQuery();
                 while (projectIDs.next()) {
                     int projectID = projectIDs.getInt("fldProjectID");
+                    //If matched, end searchProject and then call displayProject
                     if (searchID == projectID) {
                         match = true;
                         displayProject(searchID);
                         break;
                     }
                 }
+                //If not matched, print error-message and repeat prompt
                 if (match != true) {
                     System.out.printf("%sThere is no project with that ID, please try again!%s%n", ANSI_RED, ANSI_RESET);
                 }
-            } catch (SQLException e) {
-
-            }
-
+            } catch (SQLException e) {}
         } while (!match);
     }
 
+    /**
+     * method for displaying project.
+     * @param projectID to display.
+     */
     public static void displayProject(int projectID) {
+        //Prepare SQl-statement
         PreparedStatement getProject = null;
+        //Get project from projectID in database with SQl-statement
         try {
             getProject = connection.prepareCall("SELECT * FROM tblProject where fldProjectID=" + projectID);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
+        //Display project details
         try {
 
             ResultSet projectDetails = getProject.executeQuery();
@@ -381,14 +456,15 @@ public class Main{
                 System.out.printf("%s%n","Start date: " + projectStart);
                 System.out.printf("%s%s%n","End date: " + projectEnd,ANSI_RESET);
             }
-            /*String promptUpdate = "Would you like to update project? input [yes] or [no]: ";
+            /*
+            //Prompt user for choice, let user chose to update
+            String promptUpdate = "Would you like to update project? input [yes] or [no]: ";
             boolean updateProject = askYesNo(promptUpdate);
             if (updateProject) {
-                System.out.println("Update project!");
-            }*/
-        } catch (SQLException e) {
-
-        }
+                // editProjectUpdateSql();
+            }
+            */
+        } catch (SQLException e) {}
     }
     /**
      * Sending a SQL UPDATE to the DB to change fields. Includes basic SQL error handling.
@@ -446,6 +522,35 @@ public class Main{
             System.out.printf("%s%S%s%n",ANSI_RED,"error:",ANSI_RESET);
             e.printStackTrace();
         }
+    }
+
+    /***
+     * This method takes in to dates as String in format "dd.mm,yyyy"
+     * and checks if startdate is before end date.
+     * @param startDateStr String
+     * @param endDateStr String
+     * @return bool, true if startDate is before endDate.
+     */
+    public static boolean dateCheck(String startDateStr, String endDateStr) {
+
+        // initialising date format.
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd.mm.yyyy");
+
+        // converting dates from String to Date datatype.
+        Date startDate = null;
+        try {
+            startDate = dateFormat.parse(startDateStr);
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
+        }
+        Date endDate = null;
+        try {
+            endDate = dateFormat.parse(endDateStr);
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
+        }
+
+        return (startDate.before(endDate));
     }
 
     /**
