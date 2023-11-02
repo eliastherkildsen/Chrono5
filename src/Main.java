@@ -223,13 +223,16 @@ public class Main{
         String projectName;
         boolean isStartDateBeforeEnddate;
 
-        // prompts the user to enter project details, until the
-        // entered details are accepted as valid.
-        do {
+
+
 
             // prompts the user to enter a project name and saves the input.
             projectName = getProjectName();
 
+            // prompts the user to enter a start and end date of the project
+            // and checks if start date is before end date, else it prompts the user to retry.
+
+        do {
             // prompt user to create a project start date and saves the input.
             projectStartDate = getProjectDate("start date");
 
@@ -413,10 +416,26 @@ public class Main{
                 ResultSet projectIDs = getProjectIDs.executeQuery();
                 while (projectIDs.next()) {
                     int projectID = projectIDs.getInt("fldProjectID");
-                    //If matched, end searchProject and then call displayProject
+                    //If matched end searchProject
                     if (searchID == projectID) {
                         match = true;
-                        displayProject(searchID);
+                        do {
+                            //Prompt user to choose 1 or 2 i.e. choose function
+                            String prompt = "Input [1] to display project. Input [2] to update project: ";
+                            int input = getUserInputInt(prompt);
+                            //If input is 1 then display project
+                            if (input == 1) {
+                                displayProject(searchID);
+                                break;
+                            //If input is 2 then update project
+                            } else if (input == 2) {
+                                updateProjectInterface(searchID);
+                                break;
+                            //If invalid input print error-message and repeat prompt
+                            } else {
+                                System.out.printf("%sInvalid input, please try again!%s%n", ANSI_RED, ANSI_RESET);
+                            }
+                        } while (true);
                         break;
                     }
                 }
@@ -456,14 +475,6 @@ public class Main{
                 System.out.printf("%s%n","Start date: " + projectStart);
                 System.out.printf("%s%s%n","End date: " + projectEnd,ANSI_RESET);
             }
-            /*
-            //Prompt user for choice, let user chose to update
-            String promptUpdate = "Would you like to update project? input [yes] or [no]: ";
-            boolean updateProject = askYesNo(promptUpdate);
-            if (updateProject) {
-                // editProjectUpdateSql();
-            }
-            */
         } catch (SQLException e) {}
     }
     /**
@@ -559,18 +570,17 @@ public class Main{
     /**
      * updateProjectInterface facilitates the use of update and delete.
      */
-    public static void updateProjectInterface () {
+    public static void updateProjectInterface (int projectID) {
         //Setting up variables.
-        int projectId = 1;
         boolean doWhileAction1;
         boolean doWhileAction2;
         String column = "";
         String value = "";
-        String condition = "fldProjectID = " + projectId;
+        String condition = "fldProjectID = " + projectID;
 
         //Welcome message to module, and display of project being edited.
         System.out.printf("%n%s%S%s%n",ANSI_YELLOW,"Update your project.",ANSI_RESET);
-        displayProject(projectId);
+        displayProject(projectID);
 
         //do while to find out if edit or delete.
         do {
@@ -581,9 +591,9 @@ public class Main{
 
             //If statement to find edit-1 or delete-2.
             if (actionChosen == 1) {
-                displayProject(projectId);
-                System.out.printf("%S%n%S%n%S%n%S%n", "[1] - Project Name", "[2] - Start Date", "[3] - End Date", "[4] - Goto Main Menu");
-                actionChosen = getUserInputInt("Type 1 - 2 - 3 - 4 depending on field you wish to change:%n");
+                displayProject(projectID);
+                System.out.printf("%S%n%S%n%S%n", "[1] - Project Name", "[2] - Start Date", "[3] - End Date");
+                actionChosen = getUserInputInt("Type 1 - 2 - 3 depending on field you wish to change:%n");
 
                 //If we are editing, then finding what to edit OR if we just want to quit. 1-4
                 do {
@@ -628,7 +638,7 @@ public class Main{
 
                 //ELSE IF actionchosen 2, then we are deleting a project.
             } else if (actionChosen == 2) {
-                deleteProjectSql(connection, projectId);
+                deleteProjectSql(connection, projectID);
                 doWhileAction1 = true;
             } else {
                 System.out.printf("%s%S%s",ANSI_RED,"Please try again.",ANSI_RESET);
