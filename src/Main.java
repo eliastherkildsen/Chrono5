@@ -26,8 +26,6 @@ public class Main{
         connection = databaseConnection(properties, URL);
         System.out.printf("%sCreating connection.%s%n", ANSI_YELLOW, ANSI_RESET);
 
-        createProject();
-
         // closing JDBC connection
         databaseClose(connection);
 
@@ -142,7 +140,7 @@ public class Main{
      * method for getting a user input. checking if the input is a numeric value
      * checking if the value is positive.
      * and closing scanner again.
-     * @return
+     * @return user input if valid.
      */
     public static int getUserInputInt(String prompt){
 
@@ -177,7 +175,7 @@ public class Main{
     /**
      * prompts the user for a data, month, year
      * validates the inputs, and returns them in a string formatted DD.MM.YY
-     * @return formatted
+     * @return formatted date
      */
     public static String dateFormattingWithValidation() {
 
@@ -237,6 +235,11 @@ public class Main{
 
     }
 
+    /**
+     * Method to create a project, prompts user for project information ex.
+     * projectStartDate, projectEndDate and projectName.
+     * writes all project attributes to the database.
+     */
     public static void createProject(){
 
         // initializing
@@ -257,14 +260,12 @@ public class Main{
         System.out.printf("Please enter information relating to the project end date%n");
         projectEndDate = dateFormattingWithValidation();
 
-        // SQL calls!
-        PreparedStatement preparedStatement = null;
-
-        // preparing SQL statement.
-
+        // preparing SQL quarry.
         String quarryValues = String.format("('" + projectStartDate + "'," + "'" + projectEndDate + "'," + "'" + projectName + "')");
         String quarry = "INSERT INTO tblProject (fldProjectStartDate, fldProjectEndDate, fldProjectName) VALUES " + quarryValues;
 
+        // preparing SQL statement.
+        PreparedStatement preparedStatement = null;
 
         try {
             preparedStatement = connection.prepareCall(quarry);
