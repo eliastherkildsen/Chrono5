@@ -592,7 +592,7 @@ public class Main{
             //If statement to find edit-1 or delete-2.
             if (actionChosen == 1) {
                 displayProject(projectID);
-                System.out.printf("%S%n%S%n%S%n", "[1] - Project Name", "[2] - Start Date", "[3] - End Date");
+                System.out.printf("%S%n%S%n%S%n%S%n", "[1] - Project Name", "[2] - Start Date", "[3] - End Date", "[4] - Exiting - Going to Main Menu");
                 actionChosen = getUserInputInt("Type 1 - 2 - 3 depending on field you wish to change:%n");
 
                 //If we are editing, then finding what to edit OR if we just want to quit. 1-4
