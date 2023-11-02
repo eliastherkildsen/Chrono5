@@ -29,6 +29,9 @@ public class Main{
         connection = databaseConnection(properties, URL);
         System.out.printf("%sCreating connection.%s%n", ANSI_YELLOW, ANSI_RESET);
 
+        //Main US
+        handleProject();
+
         // closing JDBC connection
         databaseClose(connection);
 
@@ -328,11 +331,10 @@ public class Main{
      * method for handling project. Lets user handle a project.
      */
     public static void handleProject() {
-        Scanner in = new Scanner(System.in);
         do {
             //Prompt user to input 1 or 2
-            System.out.print("Input [1] to search for project. Input [2] to create a new project: ");
-            int input = in.nextInt();
+            String prompt = "Input [1] to search for project. Input [2] to create a new project: ";
+            int input = getUserInputInt(prompt);
             //If input is 1 then search project
             if (input == 1) {
                 searchProject();
