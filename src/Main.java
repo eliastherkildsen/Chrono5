@@ -616,8 +616,11 @@ public class Main{
                         case 4:
                             System.out.printf("%s%n", "[4] - Exiting - Going to Main Menu");
                             doWhileAction2 = true;
+                            break;
                         default:
                             System.out.printf("%s", "Error?");
+                            doWhileAction2 = false; //Fail safe.
+                            break;
                     }
                 } while (!doWhileAction2);
                 //Setting doWhileAction1 true, as we are done here.
