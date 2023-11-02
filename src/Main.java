@@ -447,6 +447,10 @@ public class Main{
             e.printStackTrace();
         }
     }
+
+    /**
+     * updateProjectInterface facilitates the use of update and delete.
+     */
     public static void updateProjectInterface () {
         int projectId = 1;
         boolean doWhileAction1;
