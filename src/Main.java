@@ -27,12 +27,6 @@ public class Main{
         connection = databaseConnection(properties, URL);
         System.out.printf("%sCreating connection.%s%n", ANSI_YELLOW, ANSI_RESET);
 
-        //int input = getUserInputInt();
-        //System.out.println(input);
-
-        searchProject();
-
-
         // closing JDBC connection
         databaseClose(connection);
 
@@ -40,12 +34,12 @@ public class Main{
     }
 
     /***
-     * Properties method used to create a propertie containing all props used to
+     * Properties method used to create a properties containing all props used to
      * connect to JDBC
      * @return properties
      */
     public static Properties setProps(){
-        // creating a intestines of properties.
+        // creating an intestines of properties.
         Properties properties = new Properties();
         properties.setProperty("user", USERNAME);
         properties.setProperty("password", PASSWORD);
@@ -84,7 +78,7 @@ public class Main{
         // initializes connection.
         Connection connection = null;
 
-        // JDBC tryes to connect to SQL database add URL.
+        // JDBC tries to connect to SQL database add URL.
         try {
             connection = DriverManager.getConnection(URL, properties);
         } catch (SQLException e) {
@@ -128,8 +122,8 @@ public class Main{
     }
 
     /***
-     * method for getting a userinput as a string. and closing scanner again.
-     * @return userinput.
+     * method for getting a user input as a string. and closing scanner again.
+     * @return user input.
      */
     public static String getUserInputStr(){
         // init scanner and string to hold input.
@@ -139,9 +133,6 @@ public class Main{
         // reads input.
         input = scanner.nextLine();
 
-        // closes scanner.
-        scanner.close();
-
         // returns input.
         return input;
     }
@@ -150,38 +141,148 @@ public class Main{
      * method for getting a user input. checking if the input is a numeric value
      * checking if the value is positive.
      * and closing scanner again.
-     * @return
+     * @return user input if valid.
      */
-    public static int getUserInputInt(){
+    public static int getUserInputInt(String prompt){
 
         Scanner scanner = new Scanner(System.in);
         int input;
 
         do {
-            // checks if user has entered a integer.
+            // checks if user has entered an integer.
+            System.out.printf(prompt);
             if (scanner.hasNextInt()){
                 input = scanner.nextInt();
-                // checks if entered integer is positive.
-                if (input >= 0){
-                    // closing scanner.
-                    scanner.close();
-                    return input;
+                // checks if entered integer is negative.
+                if (!(input >= 0)){
+                    System.out.printf("%sYou have entered a negative number witch is not allowed%s%n", ANSI_RED, ANSI_RESET);
                 }
 
-                // if entered number is negative.
-                else {
-                    System.out.printf("%sYou have entered a negative number witch is not allowed%s%n", ANSI_RED, ANSI_RESET);
-                    scanner.next();
-                }
+                break;
+
 
             }
             // if a none numeric value is entered.
             else {
                 System.out.printf("%sYou are only allowed to enter numbers, please try again.%s%n", ANSI_RED, ANSI_RESET);
-                scanner.next();
+                scanner.nextLine();
             }
 
         }while (true);
+        return input;
+
+    }
+
+    /**
+     * prompts the user for a data, month, year
+     * validates the inputs, and returns them in a string formatted DD.MM.YY
+     * @return formatted date
+     */
+    public static String dateFormattingWithValidation() {
+
+        int day;
+        int month;
+        int year;
+        String prompt;
+
+        do {
+            prompt = "Enter day (DD): ";
+            day = getUserInputInt(prompt);
+
+            // checks if the month is in the valid range (1 - 12).
+            if (day >= 1 && day <= 31){
+                break;
+            }
+
+            // sends error message to user.
+            System.out.printf("%sYou have entered a value witch is not a valid. " +
+                    "day! please enter a day 1 between 31 %s%n", ANSI_RED,ANSI_RESET);
+
+
+        } while (true);
+
+        do {
+            prompt = "Enter month (MM): ";
+            month = getUserInputInt(prompt);
+
+            // checks if the month is in the valid range (1 - 12).
+            if (month >= 1 && month <= 12){
+                break;
+            }
+
+            // sends error message to user.
+            System.out.printf("%sYou have entered a value witch is not a valid. " +
+                    "month! please enter a month 1 between 12 %s%n", ANSI_RED,ANSI_RESET);
+
+
+        } while (true);
+
+        do {
+            prompt = "Enter year (YYYY): ";
+            year = getUserInputInt(prompt);
+            // checks if the year is in the valid range.
+            if (year >= 2022 && year <= 2030){
+                break;
+            }
+
+            // sends error message to user.
+            System.out.printf("%sYou have entered a value  witch is not a valid. " +
+                    "day! please enter a year between 2022 and 2030%s%n", ANSI_RED,ANSI_RESET);
+
+        } while (true);
+
+        return String.format("%s.%s.%s",day, month, year);
+
+
+    }
+
+    /**
+     * Method to create a project, prompts user for project information ex.
+     * projectStartDate, projectEndDate and projectName.
+     * writes all project attributes to the database.
+     */
+    public static void createProject(){
+
+        // initializing
+        String projectStartDate;
+        String projectEndDate;
+        String projectName;
+
+
+        // prompts the user to enter a project name and saves the input.
+        System.out.printf("Pleas give your project a name %n");
+        projectName = getUserInputStr();
+
+        // prompt user to create a project start date and saves the input.
+        System.out.printf("Please enter information relating to the project start date%n");
+        projectStartDate = dateFormattingWithValidation();
+
+        // prompt user to create a project start data and saves the input.
+        System.out.printf("Please enter information relating to the project end date%n");
+        projectEndDate = dateFormattingWithValidation();
+
+        // preparing SQL quarry.
+        String quarryValues = String.format("('" + projectStartDate + "'," + "'" + projectEndDate + "'," + "'" + projectName + "')");
+        String quarry = "INSERT INTO tblProject (fldProjectStartDate, fldProjectEndDate, fldProjectName) VALUES " + quarryValues;
+
+        // preparing SQL statement.
+        PreparedStatement preparedStatement = null;
+
+        try {
+            preparedStatement = connection.prepareCall(quarry);
+            System.out.printf("%sQuarry sent! %s",ANSI_YELLOW,ANSI_RESET );
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        try {
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
+
     }
 
     /**
@@ -202,6 +303,7 @@ public class Main{
             }
         } while(true);
     }
+
 
     public static void searchProject() {
         Scanner in = new Scanner(System.in);
@@ -263,6 +365,7 @@ public class Main{
 
         }
     }
+
 
     // ANSI escape code colors.
     // from -> https://stackoverflow.com/questions/5762491/how-to-print-color-in-console-using-system-out-println
