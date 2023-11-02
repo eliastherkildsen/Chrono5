@@ -29,6 +29,9 @@ public class Main{
         connection = databaseConnection(properties, URL);
         System.out.printf("%sCreating connection.%s%n", ANSI_YELLOW, ANSI_RESET);
 
+
+
+
         // closing JDBC connection
         databaseClose(connection);
 
@@ -250,16 +253,14 @@ public class Main{
 
 
         // prompts the user to enter a project name and saves the input.
-        System.out.printf("Pleas give your project a name %n");
-        projectName = getUserInputStr();
+        projectName = getProjectName();
 
         // prompt user to create a project start date and saves the input.
-        System.out.printf("Please enter information relating to the project start date%n");
-        projectStartDate = dateFormattingWithValidation();
+        projectStartDate = getProjectDate("start date");
 
-        // prompt user to create a project start data and saves the input.
-        System.out.printf("Please enter information relating to the project end date%n");
-        projectEndDate = dateFormattingWithValidation();
+        // prompt user to create a project end date and saves the input.
+        projectEndDate = getProjectDate("end date");
+
 
         // preparing SQL quarry.
         String quarryValues = String.format("('" + projectStartDate + "'," + "'" + projectEndDate + "'," + "'" + projectName + "')");
@@ -283,6 +284,56 @@ public class Main{
             throw new RuntimeException(e);
         }
 
+    }
+
+    /***
+     * Method prompts the user to enter start date for project
+     * @param date
+     * @return
+     */
+    private static String getProjectDate(String date) {
+        String formattedDate;
+        do {
+            System.out.printf("Please enter information relating to the %s %n", date);
+            formattedDate = dateFormattingWithValidation();
+
+            // prompts the user to check if the entered name is correct!
+            String prompt = String.format("Is %s%s%s the correct %s for your project? %n enter " +
+                    "[yes] to continue or enter [no] to try again!",ANSI_GREEN, formattedDate, ANSI_RESET, date);
+            if (askYesNo(prompt)){
+                break;
+            }
+
+        }while (true);
+
+        return formattedDate;
+
+    }
+
+    /***
+     * Method prompts the user for a project name, and
+     * gives the user the ability to re-enter the project name.
+     * @return the project name.
+     */
+    private static String getProjectName() {
+        // initialise variables.
+        String projectName;
+        do {
+            // prompts the user to enter a project name.
+            System.out.printf("Pleas give your project a name %n");
+            projectName = getUserInputStr();
+
+            // prompts the user to check if the entered name is correct!
+            String prompt = String.format("Is %s%s%s the correct name for your project? %n " +
+                    "enter [yes] to continue or enter [no] to try again!",ANSI_GREEN, projectName, ANSI_RESET);
+
+            // checks if the user wants to retry entering the project name.
+            if (askYesNo(prompt)){
+                break;
+            }
+        }while (true);
+
+        return projectName;
     }
 
     /**
