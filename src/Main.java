@@ -7,7 +7,7 @@ public class Main{
     // JDBC PROPS
     public static final String USERNAME = "sa";
     public static final String PASSWORD = "1234";
-    public static final String DATABASE_NAME = "dbTest";
+    public static final String DATABASE_NAME = "dbChrono5";
     public static final String PORT = "1433";
     public static final String ENCRYPT = "false";
     public static final String URL = "jdbc:sqlserver://localhost:"+ PORT +";databaseName="+DATABASE_NAME;
