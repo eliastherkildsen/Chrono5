@@ -77,13 +77,10 @@ public class Main{
 
     /***
      * method for creating a connection to a database
-     * @param properties
-     * @param URL
+     * @param properties properties used to connect to JDBC
+     * @param URL database directory used to connect JDBC
      */
     public static Connection databaseConnection(Properties properties, String URL){
-
-        // initializes connection.
-        Connection connection = null;
 
         // JDBC tries to connect to SQL database add URL.
         try {
@@ -103,7 +100,7 @@ public class Main{
     public static String getUserInputStr(){
         // init scanner and string to hold input.
         Scanner scanner = new Scanner(System.in);
-        String input = "";
+        String input;
 
         // reads input.
         input = scanner.nextLine();
@@ -221,7 +218,7 @@ public class Main{
         String projectStartDate;
         String projectEndDate;
         String projectName;
-        boolean isStartDateBeforeEnddate;
+        boolean isStartDateBeforeEndDate;
 
 
 
@@ -240,13 +237,13 @@ public class Main{
             projectEndDate = getProjectDate("end date");
 
             // Checks if start date is before end date.
-            isStartDateBeforeEnddate = dateCheck(projectStartDate, projectEndDate);
-            if (isStartDateBeforeEnddate){
+            isStartDateBeforeEndDate = dateCheck(projectStartDate, projectEndDate);
+            if (isStartDateBeforeEndDate){
                 break;
 
             }
             // prompts user with error messages. and sends user back to method start.
-            System.out.printf("%sThe start date has to be before the enddate! please try again.%s%n", ANSI_RED, ANSI_RESET);
+            System.out.printf("%sThe start date has to be before the end date! please try again.%s%n", ANSI_RED, ANSI_RESET);
         }while (true);
 
         // preparing SQL quarry.
@@ -254,11 +251,11 @@ public class Main{
         String quarry = "INSERT INTO tblProject (fldProjectStartDate, fldProjectEndDate, fldProjectName) VALUES " + quarryValues;
 
         // preparing SQL statement.
-        PreparedStatement preparedStatement = null;
+        PreparedStatement preparedStatement;
 
         try {
             preparedStatement = connection.prepareCall(quarry);
-            System.out.printf("%sQuarry sent! %s",ANSI_YELLOW,ANSI_RESET );
+            System.out.printf("%sQuarry sent! %s%n",ANSI_YELLOW,ANSI_RESET );
 
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -275,8 +272,8 @@ public class Main{
 
     /***
      * Method prompts the user to enter start date for project
-     * @param date
-     * @return
+     * @param date is start date for project
+     * @return date formatted
      */
     private static String getProjectDate(String date) {
         String formattedDate;
@@ -404,7 +401,7 @@ public class Main{
             String promptID = "Project ID: ";
             int searchID = getUserInputInt(promptID);
             //Prepare SQL-statement
-            PreparedStatement getProjectIDs = null;
+            PreparedStatement getProjectIDs;
             //Get all IDs from database with SQL-statement
             try {
                 getProjectIDs = connection.prepareCall("SELECT fldProjectID FROM tblProject");
@@ -440,10 +437,10 @@ public class Main{
                     }
                 }
                 //If not matched, print error-message and repeat prompt
-                if (match != true) {
+                if (!match) {
                     System.out.printf("%sThere is no project with that ID, please try again!%s%n", ANSI_RED, ANSI_RESET);
                 }
-            } catch (SQLException e) {}
+            } catch (SQLException ignored) {}
         } while (!match);
     }
 
@@ -453,7 +450,7 @@ public class Main{
      */
     public static void displayProject(int projectID) {
         //Prepare SQl-statement
-        PreparedStatement getProject = null;
+        PreparedStatement getProject;
         //Get project from projectID in database with SQl-statement
         try {
             getProject = connection.prepareCall("SELECT * FROM tblProject where fldProjectID=" + projectID);
@@ -475,7 +472,7 @@ public class Main{
                 System.out.printf("%s%n","Start date: " + projectStart);
                 System.out.printf("%s%s%n","End date: " + projectEnd,ANSI_RESET);
             }
-        } catch (SQLException e) {}
+        } catch (SQLException ignore) {}
     }
     /**
      * Sending a SQL UPDATE to the DB to change fields. Includes basic SQL error handling.
@@ -494,7 +491,7 @@ public class Main{
             int row = preparedStatement.executeUpdate();
             System.out.printf("%s%S%d%s%n",ANSI_YELLOW,"rows affected: ",row,ANSI_RESET);
 
-            //Catch Error with some what usable text if relevant.
+            //Catch Error with somewhat usable text if relevant.
         } catch (SQLException e) {
             System.out.printf("%s%S%s%n",ANSI_RED,"error:",ANSI_RESET);
             e.printStackTrace();
@@ -510,10 +507,10 @@ public class Main{
         try {
             //Prepare SQL
             PreparedStatement preparedStatement = connection.prepareCall("DELETE FROM tblProject WHERE fldProjectID = " + condition);
-            boolean areYouSure = false;
-            //Lets display the project for the user.
+            boolean areYouSure;
+            //Display the project for the user.
             displayProject(condition);
-            //Lets make sure this is what the user wants to happen.
+            //Make sure this is what the user wants to happen.
             do {
                 System.out.printf("%s%S%s%n%S%n%S%n", ANSI_RED,"you are about to delete project " + condition + ", are you sure?", ANSI_RESET, "TYPE: DELETE " + condition, "or no to cancel.");
                 String input = getUserInputStr();
@@ -534,13 +531,13 @@ public class Main{
             System.out.printf("%s%S%s%n",ANSI_RED,"error:",ANSI_RESET);
             e.printStackTrace();
         }
-        //Lets go home to mainMenu
+        //Go home to mainMenu
         mainMenu();
     }
 
     /***
      * This method takes in to dates as String in format "dd.mm,yyyy"
-     * and checks if startdate is before end date.
+     * and checks if start date is before end date.
      * @param startDateStr String
      * @param endDateStr String
      * @return bool, true if startDate is before endDate.
@@ -548,16 +545,16 @@ public class Main{
     public static boolean dateCheck(String startDateStr, String endDateStr) {
 
         // initialising date format.
-        SimpleDateFormat dateFormat = new SimpleDateFormat("dd.mm.yyyy");
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy");
 
         // converting dates from String to Date datatype.
-        Date startDate = null;
+        Date startDate;
         try {
             startDate = dateFormat.parse(startDateStr);
         } catch (ParseException e) {
             throw new RuntimeException(e);
         }
-        Date endDate = null;
+        Date endDate;
         try {
             endDate = dateFormat.parse(endDateStr);
         } catch (ParseException e) {
@@ -574,8 +571,8 @@ public class Main{
         //Setting up variables.
         boolean doWhileAction1;
         boolean doWhileAction2;
-        String column = "";
-        String value = "";
+        String column;
+        String value;
         String condition = "fldProjectID = " + projectID;
 
         //Welcome message to module, and display of project being edited.
@@ -597,7 +594,6 @@ public class Main{
 
                 //If we are editing, then finding what to edit OR if we just want to quit. 1-4
                 do {
-                    doWhileAction2 = false;
                     switch (actionChosen) {
                         case 1:
                             System.out.printf("%s%n", "[1] - Project Name");
@@ -636,7 +632,7 @@ public class Main{
                 //Setting doWhileAction1 true, as we are done here.
                 doWhileAction1 = true;
 
-                //ELSE IF actionchosen 2, then we are deleting a project.
+                //ELSE IF actionChosen is 2, then we are deleting a project.
             } else if (actionChosen == 2) {
                 deleteProjectSql(connection, projectID);
                 doWhileAction1 = true;
