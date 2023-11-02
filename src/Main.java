@@ -27,12 +27,6 @@ public class Main{
         connection = databaseConnection(properties, URL);
         System.out.printf("%sCreating connection.%s%n", ANSI_YELLOW, ANSI_RESET);
 
-        //int input = getUserInputInt();
-        //System.out.println(input);
-
-        handleProject();
-
-
         // closing JDBC connection
         databaseClose(connection);
 
