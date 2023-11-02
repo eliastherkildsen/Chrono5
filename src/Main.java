@@ -1,4 +1,7 @@
 import java.sql.*;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.Properties;
@@ -58,7 +61,7 @@ public class Main{
 
     /***
      * Method used to close a database connection.
-     * @param connection
+     * @param connection to SQL DB.
      */
     public static void databaseClose(Connection connection){
         try {
@@ -78,7 +81,6 @@ public class Main{
      * method for creating a connection to a database
      * @param properties
      * @param URL
-     * @return
      */
     public static Connection databaseConnection(Properties properties, String URL){
 
@@ -221,17 +223,30 @@ public class Main{
         String projectStartDate;
         String projectEndDate;
         String projectName;
+        boolean isStartDateBeforeEnddate;
 
+        // prompts the user to enter project details, until the
+        // entered details are accepted as valid.
+        do {
 
-        // prompts the user to enter a project name and saves the input.
-        projectName = getProjectName();
+            // prompts the user to enter a project name and saves the input.
+            projectName = getProjectName();
 
-        // prompt user to create a project start date and saves the input.
-        projectStartDate = getProjectDate("start date");
+            // prompt user to create a project start date and saves the input.
+            projectStartDate = getProjectDate("start date");
 
-        // prompt user to create a project end date and saves the input.
-        projectEndDate = getProjectDate("end date");
+            // prompt user to create a project end date and saves the input.
+            projectEndDate = getProjectDate("end date");
 
+            // Checks if start date is before end date.
+            isStartDateBeforeEnddate = dateCheck(projectStartDate, projectEndDate);
+            if (isStartDateBeforeEnddate){
+                break;
+
+            }
+            // prompts user with error messages. and sends user back to method start.
+            System.out.printf("%sThe start date has to be before the enddate! please try again.%s%n", ANSI_RED, ANSI_RESET);
+        }while (true);
 
         // preparing SQL quarry.
         String quarryValues = String.format("('" + projectStartDate + "'," + "'" + projectEndDate + "'," + "'" + projectName + "')");
@@ -498,6 +513,35 @@ public class Main{
             System.out.printf("%s%S%s%n",ANSI_RED,"error:",ANSI_RESET);
             e.printStackTrace();
         }
+    }
+
+    /***
+     * This method takes in to dates as String in format "dd.mm,yyyy"
+     * and checks if startdate is before end date.
+     * @param startDateStr String
+     * @param endDateStr String
+     * @return bool, true if startDate is before endDate.
+     */
+    public static boolean dateCheck(String startDateStr, String endDateStr) {
+
+        // initialising date format.
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd.mm.yyyy");
+
+        // converting dates from String to Date datatype.
+        Date startDate = null;
+        try {
+            startDate = dateFormat.parse(startDateStr);
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
+        }
+        Date endDate = null;
+        try {
+            endDate = dateFormat.parse(endDateStr);
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
+        }
+
+        return (startDate.before(endDate));
     }
 
     // ANSI escape code colors.
