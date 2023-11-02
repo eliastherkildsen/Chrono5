@@ -339,6 +339,7 @@ public class Main{
             System.out.println("[1] to handle project");
             System.out.println("[2] to administer customer");
             System.out.println("[3] to administer consultant");
+            System.out.println("[exit] to exit program");
             System.out.print("Input: ");
             String input = getUserInputStr();
             //Run function corresponding with input, repeat until user input exit
