@@ -27,8 +27,10 @@ public class Main{
         connection = databaseConnection(properties, URL);
         System.out.printf("%sCreating connection.%s%n", ANSI_YELLOW, ANSI_RESET);
 
-        int input = getUserInputInt();
-        System.out.println(input);
+        //int input = getUserInputInt();
+        //System.out.println(input);
+
+        searchProject();
 
 
         // closing JDBC connection
@@ -188,9 +190,8 @@ public class Main{
      */
     public static boolean askYesNo(String prompt) {
         Scanner in = new Scanner(System.in);
-        System.out.println(prompt);
         do {
-            System.out.print("Input: ");
+            System.out.print(prompt);
             String input = in.nextLine().toLowerCase();
             if (input.equals("yes")) {
                 return true;
@@ -202,7 +203,7 @@ public class Main{
         } while(true);
     }
 
-    public static void searchProject() throws SQLException {
+    public static void searchProject() {
         Scanner in = new Scanner(System.in);
         System.out.println("Search for project");
         boolean match = false;
@@ -211,7 +212,7 @@ public class Main{
             int searchID = in.nextInt();
             PreparedStatement getProjectIDs = null;
             try {
-                getProjectIDs = connection.prepareCall("SELECT fldProjectID FROM tblTest");
+                getProjectIDs = connection.prepareCall("SELECT fldProjectID FROM tblProject");
             } catch (SQLException e) {
                 throw new RuntimeException(e);
             }
@@ -238,7 +239,7 @@ public class Main{
     public static void displayProject(int projectID) {
         PreparedStatement getProject = null;
         try {
-            getProject = connection.prepareCall("SELECT * FROM tblTest where fldProjectID=" + projectID);
+            getProject = connection.prepareCall("SELECT * FROM tblProject where fldProjectID=" + projectID);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -246,14 +247,14 @@ public class Main{
             ResultSet projectDetails = getProject.executeQuery();
             while (projectDetails.next()) {
                 String projectName = projectDetails.getString("fldProjectName");
-                String projectStart = projectDetails.getString("fldProjectStart");
-                String projectEnd = projectDetails.getString("fldProjectEnd");
+                String projectStart = projectDetails.getString("fldProjectStartDate");
+                String projectEnd = projectDetails.getString("fldProjectEndDate");
 
                 System.out.println("Project name: " + projectName);
                 System.out.println("Start date: " + projectStart);
                 System.out.println("End date: " + projectEnd);
             }
-            String promptUpdate = "Would you like to update project? input [yes] or [no]";
+            String promptUpdate = "Would you like to update project? input [yes] or [no]: ";
             boolean updateProject = askYesNo(promptUpdate);
             if (updateProject) {
                 System.out.println("Update project!");
