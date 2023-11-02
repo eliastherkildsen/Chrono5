@@ -30,7 +30,9 @@ public class Main{
         System.out.printf("%sCreating connection.%s%n", ANSI_YELLOW, ANSI_RESET);
 
         //Main US
-        handleProject();
+        //handleProject();
+
+        mainMenu();
 
         // closing JDBC connection
         databaseClose(connection);
@@ -328,11 +330,34 @@ public class Main{
     }
 
     /**
+     * method for choosing function. Lets user choose what function to process in program.
+     */
+    public static void mainMenu() {
+        do {
+            //Prompt user to input 1, 2 or 3 i.e. choose function
+            System.out.println("Please choose a function");
+            System.out.println("[1] to handle project");
+            System.out.println("[2] to administer customer");
+            System.out.println("[3] to administer consultant");
+            System.out.print("Input: ");
+            String input = getUserInputStr();
+            //Run function corresponding with input, repeat until user input exit
+            switch (input) {
+                case "1": handleProject(); break;
+                case "2": /*administerCustomer*/ break;
+                case "3": /*administerConsultant*/ break;
+                case "exit": System.exit(0);
+                default: System.out.printf("%sInvalid input, please try again!%s%n", ANSI_RED, ANSI_RESET);
+            }
+        } while (true);
+    }
+
+    /**
      * method for handling project. Lets user handle a project.
      */
     public static void handleProject() {
         do {
-            //Prompt user to input 1 or 2
+            //Prompt user to input 1 or 2 i.e. choose function
             String prompt = "Input [1] to search for project. Input [2] to create a new project: ";
             int input = getUserInputInt(prompt);
             //If input is 1 then search project
