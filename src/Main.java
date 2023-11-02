@@ -223,13 +223,16 @@ public class Main{
         String projectName;
         boolean isStartDateBeforeEnddate;
 
-        // prompts the user to enter project details, until the
-        // entered details are accepted as valid.
-        do {
+
+
 
             // prompts the user to enter a project name and saves the input.
             projectName = getProjectName();
 
+            // prompts the user to enter a start and end date of the project
+            // and checks if start date is before end date, else it prompts the user to retry.
+
+        do {
             // prompt user to create a project start date and saves the input.
             projectStartDate = getProjectDate("start date");
 
