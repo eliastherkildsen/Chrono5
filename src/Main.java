@@ -1,7 +1,6 @@
 import java.sql.*;
 import java.util.Properties;
 import java.util.Scanner;
-
 public class Main{
 
     // JDBC PROPS
@@ -28,7 +27,6 @@ public class Main{
         System.out.printf("%sCreating connection.%s%n", ANSI_YELLOW, ANSI_RESET);
 
         createProject();
-        //System.out.println(dateFormattingWithValidation());
 
         // closing JDBC connection
         databaseClose(connection);
@@ -146,13 +144,14 @@ public class Main{
      * and closing scanner again.
      * @return
      */
-    public static int getUserInputInt(){
+    public static int getUserInputInt(String prompt){
 
         Scanner scanner = new Scanner(System.in);
         int input;
 
         do {
             // checks if user has entered an integer.
+            System.out.printf(prompt);
             if (scanner.hasNextInt()){
                 input = scanner.nextInt();
                 // checks if entered integer is negative.
@@ -167,7 +166,7 @@ public class Main{
             // if a none numeric value is entered.
             else {
                 System.out.printf("%sYou are only allowed to enter numbers, please try again.%s%n", ANSI_RED, ANSI_RESET);
-                String x =scanner.nextLine();
+                scanner.nextLine();
             }
 
         }while (true);
@@ -185,10 +184,11 @@ public class Main{
         int day;
         int month;
         int year;
+        String prompt;
 
         do {
-            System.out.print("Enter day (DD): ");
-            day = getUserInputInt();
+            prompt = "Enter day (DD): ";
+            day = getUserInputInt(prompt);
 
             // checks if the month is in the valid range (1 - 12).
             if (day >= 1 && day <= 31){
@@ -197,14 +197,14 @@ public class Main{
 
             // sends error message to user.
             System.out.printf("%sYou have entered a value witch is not a valid. " +
-                    "day! please enter a day 1 between 31 2023%s%n", ANSI_RED,ANSI_RESET);
+                    "day! please enter a day 1 between 31 %s%n", ANSI_RED,ANSI_RESET);
 
 
         } while (true);
 
         do {
-            System.out.print("Enter month (MM): ");
-            month = getUserInputInt();
+            prompt = "Enter month (MM): ";
+            month = getUserInputInt(prompt);
 
             // checks if the month is in the valid range (1 - 12).
             if (month >= 1 && month <= 12){
@@ -213,14 +213,14 @@ public class Main{
 
             // sends error message to user.
             System.out.printf("%sYou have entered a value witch is not a valid. " +
-                    "month! please enter a month 1 between 12 2023%s%n", ANSI_RED,ANSI_RESET);
+                    "month! please enter a month 1 between 12 %s%n", ANSI_RED,ANSI_RESET);
 
 
         } while (true);
 
         do {
-            System.out.print("Enter year (YYYY): ");
-            year = getUserInputInt();
+            prompt = "Enter year (YYYY): ";
+            year = getUserInputInt(prompt);
             // checks if the year is in the valid range.
             if (year >= 2022 && year <= 2030){
                 break;
@@ -261,9 +261,14 @@ public class Main{
         PreparedStatement preparedStatement = null;
 
         // preparing SQL statement.
+
+        String quarryValues = String.format("('" + projectStartDate + "'," + "'" + projectEndDate + "'," + "'" + projectName + "')");
+        String quarry = "INSERT INTO tblProject (fldProjectStartDate, fldProjectEndDate, fldProjectName) VALUES " + quarryValues;
+
+
         try {
-            preparedStatement = connection.prepareCall("INSERT INTO tblProject (fldProjectStartDate, fldProjectEndDate, fldProjectName)" +
-                    " VALUES ('" + projectStartDate + "', '" + projectEndDate + "', '" + projectName + "')");
+            preparedStatement = connection.prepareCall(quarry);
+            System.out.printf("%sQuarry sent! %s",ANSI_YELLOW,ANSI_RESET );
 
         } catch (SQLException e) {
             throw new RuntimeException(e);
