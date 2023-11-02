@@ -413,10 +413,26 @@ public class Main{
                 ResultSet projectIDs = getProjectIDs.executeQuery();
                 while (projectIDs.next()) {
                     int projectID = projectIDs.getInt("fldProjectID");
-                    //If matched, end searchProject and then call displayProject
+                    //If matched end searchProject
                     if (searchID == projectID) {
                         match = true;
-                        displayProject(searchID);
+                        do {
+                            //Prompt user to choose 1 or 2 i.e. choose function
+                            String prompt = "Input [1] to display project. Input [2] to update project: ";
+                            int input = getUserInputInt(prompt);
+                            //If input is 1 then display project
+                            if (input == 1) {
+                                displayProject(searchID);
+                                break;
+                            //If input is 2 then update project
+                            } else if (input == 2) {
+                                updateProjectInterface(searchID);
+                                break;
+                            //If invalid input print error-message and repeat prompt
+                            } else {
+                                System.out.printf("%sInvalid input, please try again!%s%n", ANSI_RED, ANSI_RESET);
+                            }
+                        } while (true);
                         break;
                     }
                 }
@@ -456,14 +472,6 @@ public class Main{
                 System.out.printf("%s%n","Start date: " + projectStart);
                 System.out.printf("%s%s%n","End date: " + projectEnd,ANSI_RESET);
             }
-            /*
-            //Prompt user for choice, let user chose to update
-            String promptUpdate = "Would you like to update project? input [yes] or [no]: ";
-            boolean updateProject = askYesNo(promptUpdate);
-            if (updateProject) {
-                // editProjectUpdateSql();
-            }
-            */
         } catch (SQLException e) {}
     }
     /**
@@ -556,23 +564,22 @@ public class Main{
     /**
      * updateProjectInterface facilitates the use of update and delete.
      */
-    public static void updateProjectInterface () {
-        int projectId = 1;
+    public static void updateProjectInterface (int projectID) {
         boolean doWhileAction1;
         boolean doWhileAction2;
         String column = "";
         String value = "";
-        String condition = "fldProjectID = " + projectId;
+        String condition = "fldProjectID = " + projectID;
 
         System.out.printf("%n%s%S%s%n",ANSI_YELLOW,"Update your project.",ANSI_RESET);
-        displayProject(projectId);
+        displayProject(projectID);
 
         do {
             System.out.printf("%n%s%n","Which action do you want?");
             int actionChosen = getUserInputInt("To EDIT type 1 or 2 to DELETE:%n");
             doWhileAction1 = false;
             if (actionChosen == 1) {
-                displayProject(projectId);
+                displayProject(projectID);
                 System.out.printf("%S%n%S%n%S%n", "[1] - Project Name", "[2] - Start Date", "[3] - End Date");
                 actionChosen = getUserInputInt("Type 1 - 2 - 3 depending on field you wish to change:%n");
                 do {
@@ -606,7 +613,7 @@ public class Main{
                 editProjectUpdateSql(connection, column, value, condition);
                 doWhileAction1 = true;
             } else if (actionChosen == 2) {
-                deleteProjectSql(connection, projectId);
+                deleteProjectSql(connection, projectID);
                 doWhileAction1 = true;
             } else {
                 System.out.printf("%s%S%s",ANSI_RED,"Please try again.",ANSI_RESET);
