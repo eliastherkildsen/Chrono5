@@ -29,7 +29,8 @@ public class Main{
         connection = databaseConnection(properties, URL);
         System.out.printf("%sCreating connection.%s%n", ANSI_YELLOW, ANSI_RESET);
 
-        deleteProjectSql(connection, 8);
+        //deleteProjectSql(connection, 8);
+        updateProjectInterface();
 
         // closing JDBC connection
         databaseClose(connection);
@@ -367,6 +368,7 @@ public class Main{
             throw new RuntimeException(e);
         }
         try {
+
             ResultSet projectDetails = getProject.executeQuery();
             while (projectDetails.next()) {
                 String projectId = projectDetails.getString("fldProjectID");
@@ -391,15 +393,15 @@ public class Main{
     /**
      * Sending a SQL UPDATE to the DB to change fields. Includes basic SQL error handling.
      * @param connection To function with our DB
-     * @param tableName Name of the table you want to edit.
+     *
      * @param column Name of the column you want to change.
      * @param value The value you want to change.
      * @param Condition The condition of the change.
      */
-    public static void editProjectUpdateSql(Connection connection, String tableName, String column, String value, String Condition) {
+    public static void editProjectUpdateSql(Connection connection, String column, String value, String Condition) {
         try {
             //Prepare SQL
-            PreparedStatement preparedStatement = connection.prepareCall("UPDATE " + tableName + " SET " + column + " = '" + value + "' WHERE " + Condition);
+            PreparedStatement preparedStatement = connection.prepareCall("UPDATE tblProject SET " + column + " = '" + value + "' WHERE " + Condition);
 
             //Execute it.
             int row = preparedStatement.executeUpdate();
@@ -411,6 +413,12 @@ public class Main{
             e.printStackTrace();
         }
     }
+
+    /**
+     * Method to delete row in SQL
+     * @param connection connection
+     * @param condition fldProjectID
+     */
     public static void deleteProjectSql(Connection connection, int condition) {
         try {
             //Prepare SQL
@@ -438,6 +446,65 @@ public class Main{
             System.out.printf("%s%S%s%n",ANSI_RED,"error:",ANSI_RESET);
             e.printStackTrace();
         }
+    }
+    public static void updateProjectInterface () {
+        int projectId = 1;
+        boolean doWhileAction1;
+        boolean doWhileAction2;
+        String column = "";
+        String value = "";
+        String condition = "fldProjectID = " + projectId;
+
+        System.out.printf("%n%s%S%s%n",ANSI_YELLOW,"Update your project.",ANSI_RESET);
+        displayProject(projectId);
+
+        do {
+            System.out.printf("%n%s%n","Which action do you want?");
+            int actionChosen = getUserInputInt("To EDIT type 1 or 2 to DELETE:%n");
+            doWhileAction1 = false;
+            if (actionChosen == 1) {
+                displayProject(projectId);
+                System.out.printf("%S%n%S%n%S%n", "[1] - Project Name", "[2] - Start Date", "[3] - End Date");
+                actionChosen = getUserInputInt("Type 1 - 2 - 3 depending on field you wish to change:%n");
+                do {
+                    doWhileAction2 = false;
+                    switch (actionChosen) {
+                        case 1:
+                            System.out.printf("%s%n", "[1] - Project Name");
+                            column = "fldProjectName";
+                            System.out.printf("%s","Please input new Project Name: ");
+                            value = getUserInputStr();
+                            doWhileAction2 = true;
+                            break;
+                        case 2:
+                            System.out.printf("%s%n", "[2] - Start Date");
+                            column = "fldProjectStartDate";
+                            System.out.printf("%s","Please input new Start Date: ");
+                            value = dateFormattingWithValidation();
+                            doWhileAction2 = true;
+                            break;
+                        case 3:
+                            System.out.printf("%s%n", "[3] - End Date");
+                            column = "fldProjectEndDate";
+                            System.out.printf("%s","Please input new End Date: ");
+                            value = dateFormattingWithValidation();
+                            doWhileAction2 = true;
+                            break;
+                        default:
+                            System.out.printf("%s", "What?");
+                    }
+                } while (!doWhileAction2);
+                editProjectUpdateSql(connection, column, value, condition);
+                doWhileAction1 = true;
+            } else if (actionChosen == 2) {
+                deleteProjectSql(connection, projectId);
+                doWhileAction1 = true;
+            } else {
+                System.out.printf("%s%S%s",ANSI_RED,"Please try again.",ANSI_RESET);
+            }
+        } while (!doWhileAction1);
+
+
     }
 
     // ANSI escape code colors.
